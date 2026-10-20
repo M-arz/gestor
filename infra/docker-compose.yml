@@ -1,0 +1,187 @@
+# Entorno local completo: `pnpm dev` (o docker compose -f infra/docker-compose.yml up --build)
+# Los puertos se publican solo en 127.0.0.1 y solo para desarrollo.
+# En producción únicamente el gateway es accesible desde internet.
+name: gestor
+
+x-servicio: &servicio
+  build:
+    context: ..
+    dockerfile: infra/Dockerfile.dev
+  image: gestor-dev
+  restart: unless-stopped
+  environment: &entorno-comun
+    NODE_ENV: development
+    LOG_LEVEL: debug
+    REDIS_URL: redis://redis:6379
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_postgres_pw}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD:-dev_auth_pw}
+      TEAMS_DB_PASSWORD: ${TEAMS_DB_PASSWORD:-dev_teams_pw}
+      MATCHES_DB_PASSWORD: ${MATCHES_DB_PASSWORD:-dev_matches_pw}
+      DISCIPLINE_DB_PASSWORD: ${DISCIPLINE_DB_PASSWORD:-dev_discipline_pw}
+      NOTIFICATIONS_DB_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD:-dev_notifications_pw}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    ports: ["127.0.0.1:5433:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports: ["127.0.0.1:6379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+ 
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports: ["127.0.0.1:1025:1025", "127.0.0.1:8025:8025"] # SMTP y bandeja web
+
+  gateway:
+    <<: *servicio
+    command: pnpm --filter @gestor/gateway dev
+    environment:
+      <<: *entorno-comun
+      PORT: 8080
+      AUTH_URL: http://auth:3001
+      TEAMS_URL: http://teams:3002
+      MATCHES_URL: http://matches:3003
+      DISCIPLINE_URL: http://discipline:3004
+      NOTIFICATIONS_URL: http://notifications:3005
+    volumes:
+      - ../services/gateway/src:/app/services/gateway/src
+      - ../packages/shared/src:/app/packages/shared/src
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  auth:
+    <<: *servicio
+    command: pnpm --filter @gestor/auth dev
+    environment:
+      <<: *entorno-comun
+      PORT: 3001
+      DATABASE_URL: postgres://auth_user:${AUTH_DB_PASSWORD:-dev_auth_pw}@postgres:5432/auth_db
+    volumes:
+      - ../services/auth/src:/app/services/auth/src
+      - ../packages/shared/src:/app/packages/shared/src
+    ports: ["127.0.0.1:3001:3001"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  teams:
+    <<: *servicio
+    command: pnpm --filter @gestor/teams dev
+    environment:
+      <<: *entorno-comun
+      PORT: 3002
+      DATABASE_URL: postgres://teams_user:${TEAMS_DB_PASSWORD:-dev_teams_pw}@postgres:5432/teams_db
+    volumes:
+      - ../services/teams/src:/app/services/teams/src
+      - ../packages/shared/src:/app/packages/shared/src
+    ports: ["127.0.0.1:3002:3002"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3002/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  matches:
+    <<: *servicio
+    command: pnpm --filter @gestor/matches dev
+    environment:
+      <<: *entorno-comun
+      PORT: 3003
+      DATABASE_URL: postgres://matches_user:${MATCHES_DB_PASSWORD:-dev_matches_pw}@postgres:5432/matches_db
+    volumes:
+      - ../services/matches/src:/app/services/matches/src
+      - ../packages/shared/src:/app/packages/shared/src
+    ports: ["127.0.0.1:3003:3003"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3003/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  discipline:
+    <<: *servicio
+    command: pnpm --filter @gestor/discipline dev
+    environment:
+      <<: *entorno-comun
+      PORT: 3004
+      DATABASE_URL: postgres://discipline_user:${DISCIPLINE_DB_PASSWORD:-dev_discipline_pw}@postgres:5432/discipline_db
+    volumes:
+      - ../services/discipline/src:/app/services/discipline/src
+      - ../packages/shared/src:/app/packages/shared/src
+    ports: ["127.0.0.1:3004:3004"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3004/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+  notifications:
+    <<: *servicio
+    command: pnpm --filter @gestor/notifications dev
+    environment:
+      <<: *entorno-comun
+      PORT: 3005
+      DATABASE_URL: postgres://notifications_user:${NOTIFICATIONS_DB_PASSWORD:-dev_notifications_pw}@postgres:5432/notifications_db
+    volumes:
+      - ../services/notifications/src:/app/services/notifications/src
+      - ../packages/shared/src:/app/packages/shared/src
+    ports: ["127.0.0.1:3005:3005"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3005/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
+
+volumes:
+  pgdata:
+  miniodata:
