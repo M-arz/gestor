@@ -19,5 +19,13 @@ export function loadConfig<T extends z.ZodRawShape>(
     const lines = result.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`);
     throw new Error(`Configuración inválida:\n${lines.join("\n")}`);
   }
+  // Un secreto de desarrollo nunca debe llegar a producción.
+  if (result.data.NODE_ENV === "production") {
+    for (const [k, v] of Object.entries(env)) {
+      if (typeof v === "string" && v.includes("dev-only")) {
+        throw new Error(`Configuración inválida: ${k} usa un valor de desarrollo en producción`);
+      }
+    }
+  }
   return result.data;
 }

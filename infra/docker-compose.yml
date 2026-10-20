@@ -13,6 +13,7 @@ x-servicio: &servicio
     NODE_ENV: development
     LOG_LEVEL: debug
     REDIS_URL: redis://redis:6379
+    JWT_SECRET: ${JWT_SECRET:-dev-only-jwt-secret-cambiar-0123456789abcdef}
 
 services:
   postgres:
@@ -45,8 +46,6 @@ services:
       timeout: 3s
       retries: 10
 
- 
-
   mailpit:
     image: axllent/mailpit:latest
     restart: unless-stopped
@@ -63,6 +62,7 @@ services:
       MATCHES_URL: http://matches:3003
       DISCIPLINE_URL: http://discipline:3004
       NOTIFICATIONS_URL: http://notifications:3005
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}
     volumes:
       - ../services/gateway/src:/app/services/gateway/src
       - ../packages/shared/src:/app/packages/shared/src
@@ -70,6 +70,7 @@ services:
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
+      auth: { condition: service_healthy }
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
       interval: 10s
@@ -79,10 +80,12 @@ services:
 
   auth:
     <<: *servicio
-    command: pnpm --filter @gestor/auth dev
+    command: sh -c "pnpm --filter @gestor/auth db:migrate && pnpm --filter @gestor/auth dev"
     environment:
       <<: *entorno-comun
       PORT: 3001
+      IP_HASH_SECRET: ${IP_HASH_SECRET:-dev-only-ip-hash-secret}
+      POLICY_VERSION: "1.0"
       DATABASE_URL: postgres://auth_user:${AUTH_DB_PASSWORD:-dev_auth_pw}@postgres:5432/auth_db
     volumes:
       - ../services/auth/src:/app/services/auth/src
@@ -184,4 +187,3 @@ services:
 
 volumes:
   pgdata:
-  miniodata:

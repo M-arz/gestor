@@ -5,9 +5,19 @@ import type { Logger } from "pino";
 import { ZodError } from "zod";
 import { AppError, type ErrorBody } from "./errors.js";
 
+const STATUS_CODES: Record<number, string> = {
+  401: "UNAUTHORIZED",
+  403: "FORBIDDEN",
+  404: "NOT_FOUND",
+  413: "PAYLOAD_TOO_LARGE",
+  429: "TOO_MANY_REQUESTS",
+};
+
 export interface ServiceOptions {
   name: string;
   logger: Logger;
+  /** true si el servicio está detrás de un proxy de confianza (gateway). */
+  trustProxy?: boolean;
   /** Comprobaciones para /ready (p. ej. base de datos, Redis). */
   readinessChecks?: Record<string, () => Promise<void>>;
 }
@@ -22,6 +32,7 @@ export async function createServiceApp(opts: ServiceOptions): Promise<FastifyIns
     requestIdHeader: "x-correlation-id",
     genReqId: () => randomUUID(),
     bodyLimit: 1_048_576,
+    trustProxy: opts.trustProxy ?? false,
   });
 
   await app.register(helmet);
@@ -54,7 +65,11 @@ export async function createServiceApp(opts: ServiceOptions): Promise<FastifyIns
       const e = err as { statusCode?: number; message?: string };
       if (typeof e.statusCode === "number" && e.statusCode >= 400 && e.statusCode < 500) {
         status = e.statusCode;
-        body = { code: "BAD_REQUEST", message: e.message ?? "Solicitud inválida", correlationId };
+        body = {
+          code: STATUS_CODES[status] ?? "BAD_REQUEST",
+          message: e.message ?? "Solicitud inválida",
+          correlationId,
+        };
       }
     }
 
@@ -68,13 +83,13 @@ export async function createServiceApp(opts: ServiceOptions): Promise<FastifyIns
     } satisfies ErrorBody),
   );
 
-  app.get("/health", async () => ({
+  app.get("/health", { logLevel: "silent" }, async () => ({
     status: "ok",
     service: opts.name,
     uptime: Math.round(process.uptime()),
   }));
 
-  app.get("/ready", async (_req, reply) => {
+  app.get("/ready", { logLevel: "silent" }, async (_req, reply) => {
     const entries = Object.entries(opts.readinessChecks ?? {});
     const results = await Promise.allSettled(entries.map(([, check]) => check()));
     const checks = Object.fromEntries(
