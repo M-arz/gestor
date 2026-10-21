@@ -7,6 +7,7 @@ const app = await buildApp({
   logLevel: c.LOG_LEVEL,
   jwtSecret: c.JWT_SECRET,
   authUrl: c.AUTH_URL,
+  teamsUrl: c.TEAMS_URL,
   corsOrigins: c.CORS_ORIGINS.split(",")
     .map((o) => o.trim())
     .filter(Boolean),

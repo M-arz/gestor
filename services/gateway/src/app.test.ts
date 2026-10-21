@@ -12,6 +12,7 @@ beforeAll(async () => {
   upstream = await createServiceApp({
     name: "auth-falso",
     logger: createLogger("falso", "silent"),
+    bodyLimit: 5 * 1024 * 1024,
   });
   upstream.post("/api/auth/login", async (req, reply) => {
     reply.header("set-cookie", "refresh_token=abc; HttpOnly; Path=/api/auth; SameSite=Strict");
@@ -22,6 +23,16 @@ beforeAll(async () => {
     };
   });
   upstream.get("/api/auth/me", async (req) => ({ auth: req.headers.authorization }));
+  // Servicio de equipos falso: acepta cuerpos binarios (subida de imágenes).
+  upstream.addContentTypeParser("multipart/form-data", { parseAs: "buffer" }, (_req, body, done) =>
+    done(null, body),
+  );
+  upstream.get("/api/teams/equipos", async (req) => ({ auth: req.headers.authorization }));
+  upstream.put("/api/teams/equipos/x/escudo", async (req) => ({
+    bytes: (req.body as Buffer).length,
+  }));
+  upstream.get("/api/public/escudos/a.png", async () => ({ publico: true }));
+  upstream.get("/api/public/equipos/e1", async () => ({ publico: true }));
   await upstream.listen({ port: 0, host: "127.0.0.1" });
   const addr = upstream.server.address();
   url = `http://127.0.0.1:${typeof addr === "object" && addr ? addr.port : 0}`;
@@ -33,6 +44,7 @@ const gw = (extra = {}) =>
     logLevel: "silent",
     jwtSecret: SECRET,
     authUrl: url,
+    teamsUrl: url,
     corsOrigins: ["http://localhost:5173"],
     ...extra,
   });
@@ -85,6 +97,37 @@ describe("gateway", () => {
   it("rutas /api desconocidas sin sesión dan 401, no revelan cuáles existen", async () => {
     const app = await gw();
     expect((await app.inject("/api/teams/lo-que-sea")).statusCode).toBe(401);
+  });
+  it("enruta /api/teams con sesión y deja pasar escudos y equipos públicos sin sesión", async () => {
+    const app = await gw();
+    expect((await app.inject("/api/teams/equipos")).statusCode).toBe(401);
+    const t = await token();
+    const ok = await app.inject({
+      url: "/api/teams/equipos",
+      headers: { authorization: `Bearer ${t}` },
+    });
+    expect(ok.statusCode).toBe(200);
+    expect(ok.json().auth).toBe(`Bearer ${t}`);
+    expect((await app.inject("/api/public/escudos/a.png")).statusCode).toBe(200);
+    expect((await app.inject("/api/public/equipos/e1")).statusCode).toBe(200);
+  });
+  it("deja pasar subidas de imágenes de 1,5 MB, pero no de más de 3 MB", async () => {
+    const app = await gw();
+    const t = await token();
+    const enviar = (n: number) =>
+      app.inject({
+        method: "PUT",
+        url: "/api/teams/equipos/x/escudo",
+        payload: Buffer.alloc(n, 1),
+        headers: {
+          authorization: `Bearer ${t}`,
+          "content-type": "multipart/form-data; boundary=x",
+        },
+      });
+    const ok = await enviar(1_500_000);
+    expect(ok.statusCode).toBe(200);
+    expect(ok.json().bytes).toBe(1_500_000);
+    expect((await enviar(3_500_000)).statusCode).toBe(413);
   });
   it("limita por IP más estrictamente en login (429 con formato uniforme)", async () => {
     const app = await gw({ authLimitPerMin: 3 });

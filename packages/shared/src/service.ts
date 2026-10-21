@@ -18,6 +18,8 @@ export interface ServiceOptions {
   logger: Logger;
   /** true si el servicio está detrás de un proxy de confianza (gateway). */
   trustProxy?: boolean;
+  /** Tamaño máximo del cuerpo en bytes (por defecto 1 MB). */
+  bodyLimit?: number;
   /** Comprobaciones para /ready (p. ej. base de datos, Redis). */
   readinessChecks?: Record<string, () => Promise<void>>;
 }
@@ -31,7 +33,7 @@ export async function createServiceApp(opts: ServiceOptions): Promise<FastifyIns
     loggerInstance: opts.logger as FastifyBaseLogger,
     requestIdHeader: "x-correlation-id",
     genReqId: () => randomUUID(),
-    bodyLimit: 1_048_576,
+    bodyLimit: opts.bodyLimit ?? 1_048_576,
     trustProxy: opts.trustProxy ?? false,
   });
 

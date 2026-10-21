@@ -16,4 +16,6 @@ COPY services/notifications/package.json services/notifications/
 RUN pnpm install
 
 COPY . .
+# Carpeta de escudos y fotos (teams-service). Debe ser de 'node' para poder escribir.
+RUN mkdir -p /data/archivos && chown node:node /data/archivos
 USER node

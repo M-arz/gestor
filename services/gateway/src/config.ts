@@ -6,6 +6,7 @@ export function loadGatewayConfig(env: NodeJS.ProcessEnv = process.env) {
     {
       JWT_SECRET: z.string().min(32),
       AUTH_URL: z.string().url(),
+      TEAMS_URL: z.string().url(),
       CORS_ORIGINS: z.string().default("http://localhost:5173,http://localhost:3000"),
       TRUST_PROXY: z
         .enum(["true", "false"])

@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import httpProxy from "@fastify/http-proxy";
 import rateLimit from "@fastify/rate-limit";
 import {
+  AppError,
   createLogger,
   createServiceApp,
   Errors,
@@ -16,10 +17,13 @@ export interface GatewayOptions {
   logLevel?: string;
   jwtSecret: string;
   authUrl: string;
+  teamsUrl: string;
   corsOrigins: string[];
   trustProxy?: boolean;
   generalLimitPerMin?: number;
   authLimitPerMin?: number;
+  /** Máximo del cuerpo en bytes (las subidas de imágenes pasan por aquí). */
+  bodyLimit?: number;
   now?: () => Date;
 }
 
@@ -39,7 +43,12 @@ const esPublica = (path: string) => AUTH_PUBLICAS.has(path) || path.startsWith("
 
 export async function buildApp(opts: GatewayOptions) {
   const logger = createLogger(SERVICE_NAME, opts.logLevel ?? "info");
-  const app = await createServiceApp({ name: SERVICE_NAME, logger, trustProxy: opts.trustProxy });
+  const app = await createServiceApp({
+    name: SERVICE_NAME,
+    logger,
+    trustProxy: opts.trustProxy,
+    bodyLimit: opts.bodyLimit ?? 3 * 1024 * 1024,
+  });
   const now = opts.now ?? (() => new Date());
 
   await app.register(cors, {
@@ -60,7 +69,13 @@ export async function buildApp(opts: GatewayOptions) {
   });
 
   // Validación de la sesión antes de reenviar nada. Cada servicio vuelve a verificar el rol.
+  // El proxy reenvía el cuerpo como flujo sin leerlo, así que Fastify no aplica el límite:
+  // se comprueba aquí con Content-Length para cortar cuanto antes.
+  const limite = opts.bodyLimit ?? 3 * 1024 * 1024;
   app.addHook("onRequest", async (req) => {
+    if (Number(req.headers["content-length"] ?? 0) > limite) {
+      throw new AppError(413, "PAYLOAD_TOO_LARGE", "El archivo o la solicitud es demasiado grande");
+    }
     const path = pathOf(req);
     if (!path.startsWith("/api/") || req.method === "OPTIONS" || esPublica(path)) return;
     const token = bearerToken(req);
@@ -68,19 +83,22 @@ export async function buildApp(opts: GatewayOptions) {
     await verifyAccessToken(token, opts.jwtSecret, now());
   });
 
-  await app.register(httpProxy, {
-    upstream: opts.authUrl,
-    prefix: "/api/auth",
-    rewritePrefix: "/api/auth",
-    replyOptions: {
-      // La IP real y el id de correlación viajan hacia el servicio interno.
-      rewriteRequestHeaders: (req, headers) => ({
-        ...headers,
-        "x-forwarded-for": (req as FastifyRequest).ip,
-        "x-correlation-id": String((req as FastifyRequest).id),
-      }),
-    },
-  });
+  // La IP real y el id de correlación viajan hacia los servicios internos.
+  const replyOptions = {
+    rewriteRequestHeaders: (req: unknown, headers: Record<string, unknown>) => ({
+      ...headers,
+      "x-forwarded-for": (req as FastifyRequest).ip,
+      "x-correlation-id": String((req as FastifyRequest).id),
+    }),
+  };
+  const proxy = (prefix: string, upstream: string) =>
+    app.register(httpProxy, { upstream, prefix, rewritePrefix: prefix, replyOptions });
+
+  await proxy("/api/auth", opts.authUrl);
+  await proxy("/api/teams", opts.teamsUrl);
+  // Vistas públicas (solo lectura, sin sesión). matches-service sumará las suyas en la fase 4.
+  await proxy("/api/public/equipos", opts.teamsUrl);
+  await proxy("/api/public/escudos", opts.teamsUrl);
 
   return app;
 }

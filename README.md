@@ -69,3 +69,25 @@ docker compose -f infra/docker-compose.yml exec -w /app/services/auth auth \
   se aplican solas al arrancar `auth` en local. Nunca edites una migración ya aplicada.
 - Los eventos (`usuario.registrado`, `usuario.recuperacion_solicitada`) se guardan en
   `eventos_salida`; el publicador hacia Redis llega con la fase 5.
+
+## Equipos y jugadores (fase 3)
+
+Todo por el gateway, con sesión (`Authorization: Bearer <accessToken>`):
+
+| Método y ruta                                                 | Quién                                                                         |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `POST /api/teams/equipos`                                     | delegado (crea el suyo)                                                       |
+| `GET /api/teams/equipos`                                      | delegado: los suyos · admin: los inscritos en sus torneos                     |
+| `GET/PATCH/DELETE /api/teams/equipos/:id`                     | datos básicos: cualquiera con sesión · cambios: solo su delegado              |
+| `PUT /api/teams/equipos/:id/escudo`                           | su delegado (multipart, campo `archivo`, PNG/JPG/WebP, máx. 2 MB)             |
+| `GET/POST /api/teams/equipos/:id/jugadores`                   | ver: su delegado o admins de torneos donde esté inscrito · crear: su delegado |
+| `PATCH/DELETE /api/teams/jugadores/:id`                       | su delegado                                                                   |
+| `PUT/GET /api/teams/jugadores/:id/foto`                       | su delegado (ver: también admins del torneo)                                  |
+| `GET /api/teams/jugadores/:id/carnet`                         | igual que ver plantilla                                                       |
+| `POST /api/teams/jugadores/:id/anonimizar`                    | su delegado (derecho de supresión)                                            |
+| `GET /api/public/equipos/:id`, `/api/public/escudos/:archivo` | público: solo nombre, municipio y escudo                                      |
+
+- El **documento** se guarda cifrado (AES-256-GCM) y con un hash con clave; nunca se devuelve completo.
+- Un **menor de 18** solo queda `habilitado` con `autorizacionAcudiente: true`.
+- Dentro de un equipo no se repiten documento ni dorsal. La regla de documento único **por torneo** es de `matches-service` (fase 4).
+- Las fotos de jugadores no son públicas: el navegador debe pedirlas con el token y mostrarlas como blob, no con `<img src>` directo.

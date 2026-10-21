@@ -71,6 +71,7 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
       auth: { condition: service_healthy }
+      teams: { condition: service_healthy }
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
       interval: 10s
@@ -103,14 +104,18 @@ services:
 
   teams:
     <<: *servicio
-    command: pnpm --filter @gestor/teams dev
+    command: sh -c "pnpm --filter @gestor/teams db:migrate && pnpm --filter @gestor/teams dev"
     environment:
       <<: *entorno-comun
       PORT: 3002
+      DOCUMENTO_CLAVE: ${DOCUMENTO_CLAVE:-ZGV2LW9ubHktZG9jdW1lbnRvLWtleS0zMi1ieXRlcyE=}
+      DOCUMENTO_HASH_CLAVE: ${DOCUMENTO_HASH_CLAVE:-dev-only-documento-hash-clave-0123456789}
+      STORAGE_DIR: /data/archivos
       DATABASE_URL: postgres://teams_user:${TEAMS_DB_PASSWORD:-dev_teams_pw}@postgres:5432/teams_db
     volumes:
       - ../services/teams/src:/app/services/teams/src
       - ../packages/shared/src:/app/packages/shared/src
+      - teams_archivos:/data/archivos
     ports: ["127.0.0.1:3002:3002"]
     depends_on:
       postgres: { condition: service_healthy }
@@ -187,3 +192,4 @@ services:
 
 volumes:
   pgdata:
+  teams_archivos:
