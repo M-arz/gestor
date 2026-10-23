@@ -18,6 +18,7 @@ export interface GatewayOptions {
   jwtSecret: string;
   authUrl: string;
   teamsUrl: string;
+  matchesUrl: string;
   corsOrigins: string[];
   trustProxy?: boolean;
   generalLimitPerMin?: number;
@@ -48,6 +49,7 @@ export async function buildApp(opts: GatewayOptions) {
     logger,
     trustProxy: opts.trustProxy,
     bodyLimit: opts.bodyLimit ?? 3 * 1024 * 1024,
+    analizarJson: false,
   });
   const now = opts.now ?? (() => new Date());
 
@@ -73,6 +75,8 @@ export async function buildApp(opts: GatewayOptions) {
   // se comprueba aquí con Content-Length para cortar cuanto antes.
   const limite = opts.bodyLimit ?? 3 * 1024 * 1024;
   app.addHook("onRequest", async (req) => {
+    // undici (reply-from) no soporta Expect: 100-continue; se elimina antes del proxy.
+    delete req.headers.expect;
     if (Number(req.headers["content-length"] ?? 0) > limite) {
       throw new AppError(413, "PAYLOAD_TOO_LARGE", "El archivo o la solicitud es demasiado grande");
     }
@@ -96,9 +100,11 @@ export async function buildApp(opts: GatewayOptions) {
 
   await proxy("/api/auth", opts.authUrl);
   await proxy("/api/teams", opts.teamsUrl);
-  // Vistas públicas (solo lectura, sin sesión). matches-service sumará las suyas en la fase 4.
+  await proxy("/api/matches", opts.matchesUrl);
+  // Vistas públicas (solo lectura, sin sesión).
   await proxy("/api/public/equipos", opts.teamsUrl);
   await proxy("/api/public/escudos", opts.teamsUrl);
+  await proxy("/api/public/torneos", opts.matchesUrl);
 
   return app;
 }

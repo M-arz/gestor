@@ -8,6 +8,7 @@ const app = await buildApp({
   jwtSecret: c.JWT_SECRET,
   authUrl: c.AUTH_URL,
   teamsUrl: c.TEAMS_URL,
+  matchesUrl: c.MATCHES_URL,
   corsOrigins: c.CORS_ORIGINS.split(",")
     .map((o) => o.trim())
     .filter(Boolean),

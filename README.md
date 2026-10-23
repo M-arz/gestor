@@ -91,3 +91,30 @@ Todo por el gateway, con sesión (`Authorization: Bearer <accessToken>`):
 - Un **menor de 18** solo queda `habilitado` con `autorizacionAcudiente: true`.
 - Dentro de un equipo no se repiten documento ni dorsal. La regla de documento único **por torneo** es de `matches-service` (fase 4).
 - Las fotos de jugadores no son públicas: el navegador debe pedirlas con el token y mostrarlas como blob, no con `<img src>` directo.
+
+## Torneos, partidos y posiciones (fase 4)
+
+Con sesión (`/api/matches/...`):
+
+| Ruta                                                                                                                    | Quién                                                                       |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `POST /torneos`, `GET /torneos`, `GET/PATCH /torneos/:id`, `POST /torneos/:id/estado`                                   | crear: cuenta `admin` · gestionar: administradores **de ese torneo**        |
+| `GET/POST /torneos/:id/administradores`, `DELETE .../:usuarioId`                                                        | administradores del torneo (agregar por correo; siempre queda al menos uno) |
+| `POST /torneos/:id/inscripciones`                                                                                       | delegado, con **su** equipo (queda `pendiente`)                             |
+| `GET /torneos/:id/inscripciones`, `POST /inscripciones/:id/aceptar` / `rechazar`                                        | administradores del torneo                                                  |
+| `DELETE /inscripciones/:id`, `GET /mis-inscripciones`, `GET /inscripciones/:id/plantilla`                               | delegado dueño o administradores                                            |
+| `POST /torneos/:id/grupos`, `.../grupos/generar`, `PUT /inscripciones/:id/grupo`                                        | administradores                                                             |
+| `POST /torneos/:id/fixture/generar`, `POST /torneos/:id/partidos`, `PATCH /partidos/:id`, `POST /partidos/:id/cancelar` | administradores                                                             |
+| `PUT /partidos/:id/resultado`                                                                                           | administradores (marcador + goles, asistencias y tarjetas)                  |
+| `GET /partidos/:id`, `GET /torneos/:id/estadisticas`                                                                    | cualquier usuario con sesión                                                |
+
+Públicas (sin sesión, solo lectura, caché de 5 s): `GET /api/public/torneos`, `/torneos/:id`,
+`/torneos/:id/posiciones`, `/torneos/:id/posiciones.xlsx` (Excel) y `/torneos/:id/partidos`.
+
+- Estados del torneo: `borrador` → `inscripciones_abiertas` → `en_juego` → `finalizado` → `archivado`.
+- **Documento único por torneo**: lo garantiza un índice en la base. Si dos jugadores comparten documento, el
+  segundo queda `en_conflicto` y no puede figurar en partidos. Un menor sin autorización queda `sin_autorizacion`.
+- La tabla se recalcula **en la misma transacción** que guarda el resultado. Desempates configurables por torneo
+  (`criteriosDesempate`): `diferencia_gol`, `goles_favor`, `goles_contra`, `victorias`, `enfrentamiento_directo`.
+- Para probarlo en local sin el broker de eventos (llega en la fase 5), `matches` y `teams` ya tienen
+  los manejadores de eventos; el flujo completo se verifica en las pruebas.

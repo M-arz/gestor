@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "docker compose -f infra/docker-compose.yml up --build",
+    "web": "pnpm --filter @gestor/web dev",
     "down": "docker compose -f infra/docker-compose.yml down",
     "test": "vitest run",
     "test:watch": "vitest",

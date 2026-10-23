@@ -1,6 +1,8 @@
 import { randomBytes, randomUUID } from "node:crypto";
+import { and, eq } from "drizzle-orm";
 import { AppError, Errors, type AuthUser } from "@gestor/shared";
 import { violacionUnica } from "../db/errores.js";
+import { copiaAdministradoresTorneo, copiaInscripciones, copiaTorneos } from "../db/schema.js";
 import type { Db } from "../db/types.js";
 import { MAYORIA_DE_EDAD, type Posicion, type TipoDocumento } from "../dominio.js";
 import {
@@ -527,12 +529,96 @@ export function createTeamsService({
       const t = now();
       return db.transaction(async (tx) => {
         if (!(await eventosRepo.marcarProcesado(tx, evento.id))) return false;
-        if (evento.tipo === "usuario.desactivado") {
-          const usuarioId = (evento.payload as { usuarioId?: string }).usuarioId;
-          if (!usuarioId) throw new AppError(400, "BAD_EVENT", "Evento sin usuarioId");
-          for (const e of await equiposRepo.marcarSinDelegado(tx, usuarioId, t)) {
-            await eventosRepo.outbox(tx, "equipo.actualizado", evEquipo(e), t);
+        const p = (evento.payload ?? {}) as Record<string, unknown>;
+        const str = (v: unknown) => (typeof v === "string" ? v : undefined);
+        const num = (v: unknown) => (typeof v === "number" ? v : 0);
+        switch (evento.tipo) {
+          case "usuario.desactivado": {
+            const usuarioId = str(p.usuarioId);
+            if (!usuarioId) throw new AppError(400, "BAD_EVENT", "Evento sin usuarioId");
+            for (const e of await equiposRepo.marcarSinDelegado(tx, usuarioId, t)) {
+              await eventosRepo.outbox(tx, "equipo.actualizado", evEquipo(e), t);
+            }
+            break;
           }
+          // ---- copias de matches-service: deciden quién puede ver qué plantilla ----
+          case "torneo.creado":
+          case "torneo.actualizado":
+          case "torneo.archivado": {
+            const torneoId = str(p.torneoId);
+            if (!torneoId) break;
+            const version = num(p.version);
+            const [actual] = await tx
+              .select()
+              .from(copiaTorneos)
+              .where(eq(copiaTorneos.torneoId, torneoId));
+            if (actual && version <= actual.version) break; // llegó fuera de orden
+            const datos = {
+              nombre: str(p.nombre) ?? "Torneo",
+              estado: str(p.estado) ?? "borrador",
+              version,
+            };
+            await tx
+              .insert(copiaTorneos)
+              .values({ torneoId, ...datos })
+              .onConflictDoUpdate({ target: copiaTorneos.torneoId, set: datos });
+            break;
+          }
+          case "torneo.administrador_agregado": {
+            const torneoId = str(p.torneoId);
+            const usuarioId = str(p.usuarioId);
+            if (torneoId && usuarioId)
+              await tx
+                .insert(copiaAdministradoresTorneo)
+                .values({ torneoId, usuarioId })
+                .onConflictDoNothing();
+            break;
+          }
+          case "torneo.administrador_retirado": {
+            const torneoId = str(p.torneoId);
+            const usuarioId = str(p.usuarioId);
+            if (torneoId && usuarioId) {
+              await tx
+                .delete(copiaAdministradoresTorneo)
+                .where(
+                  and(
+                    eq(copiaAdministradoresTorneo.torneoId, torneoId),
+                    eq(copiaAdministradoresTorneo.usuarioId, usuarioId),
+                  ),
+                );
+            }
+            break;
+          }
+          case "inscripcion.solicitada":
+          case "inscripcion.aceptada":
+          case "inscripcion.rechazada":
+          case "inscripcion.retirada": {
+            const equipoId = str(p.equipoId);
+            const torneoId = str(p.torneoId);
+            const version = num(p.version);
+            if (!equipoId || !torneoId) break;
+            const [actual] = await tx
+              .select()
+              .from(copiaInscripciones)
+              .where(
+                and(
+                  eq(copiaInscripciones.equipoId, equipoId),
+                  eq(copiaInscripciones.torneoId, torneoId),
+                ),
+              );
+            if (actual && version <= actual.version) break;
+            const datos = { estado: str(p.estado) ?? "pendiente", version };
+            await tx
+              .insert(copiaInscripciones)
+              .values({ equipoId, torneoId, ...datos })
+              .onConflictDoUpdate({
+                target: [copiaInscripciones.equipoId, copiaInscripciones.torneoId],
+                set: datos,
+              });
+            break;
+          }
+          default:
+            break; // eventos que este servicio no usa
         }
         return true;
       });

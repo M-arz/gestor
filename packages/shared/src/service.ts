@@ -20,6 +20,8 @@ export interface ServiceOptions {
   trustProxy?: boolean;
   /** Tamaño máximo del cuerpo en bytes (por defecto 1 MB). */
   bodyLimit?: number;
+  /** false en el gateway: solo reenvía el cuerpo, no lo lee (el proxy trae su propio analizador). */
+  analizarJson?: boolean;
   /** Comprobaciones para /ready (p. ej. base de datos, Redis). */
   readinessChecks?: Record<string, () => Promise<void>>;
 }
@@ -36,6 +38,18 @@ export async function createServiceApp(opts: ServiceOptions): Promise<FastifyIns
     bodyLimit: opts.bodyLimit ?? 1_048_576,
     trustProxy: opts.trustProxy ?? false,
   });
+
+  if (opts.analizarJson !== false) {
+    // Un cuerpo JSON vacío (p. ej. un POST sin datos que declara Content-Type: application/json) se toma
+    // como "sin cuerpo" en vez de dar error. El resto del análisis conserva la protección contra
+    // claves peligrosas como __proto__.
+    const analizarJson = app.getDefaultJsonParser("error", "error");
+    app.removeContentTypeParser("application/json");
+    app.addContentTypeParser("application/json", { parseAs: "string" }, (req, body, done) => {
+      if (typeof body === "string" && body.trim() === "") return done(null, undefined);
+      analizarJson(req, body as string, done); // los errores de formato salen como 400
+    });
+  }
 
   await app.register(helmet);
 

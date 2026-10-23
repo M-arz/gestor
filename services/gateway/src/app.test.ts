@@ -32,6 +32,8 @@ beforeAll(async () => {
     bytes: (req.body as Buffer).length,
   }));
   upstream.get("/api/public/escudos/a.png", async () => ({ publico: true }));
+  upstream.get("/api/matches/torneos", async (req) => ({ auth: req.headers.authorization }));
+  upstream.get("/api/public/torneos/t1/posiciones", async () => ({ publico: true }));
   upstream.get("/api/public/equipos/e1", async () => ({ publico: true }));
   await upstream.listen({ port: 0, host: "127.0.0.1" });
   const addr = upstream.server.address();
@@ -45,6 +47,7 @@ const gw = (extra = {}) =>
     jwtSecret: SECRET,
     authUrl: url,
     teamsUrl: url,
+    matchesUrl: url,
     corsOrigins: ["http://localhost:5173"],
     ...extra,
   });
@@ -110,6 +113,16 @@ describe("gateway", () => {
     expect(ok.json().auth).toBe(`Bearer ${t}`);
     expect((await app.inject("/api/public/escudos/a.png")).statusCode).toBe(200);
     expect((await app.inject("/api/public/equipos/e1")).statusCode).toBe(200);
+  });
+  it("enruta /api/matches con sesión y las posiciones públicas sin sesión", async () => {
+    const app = await gw();
+    expect((await app.inject("/api/matches/torneos")).statusCode).toBe(401);
+    const t = await token();
+    expect(
+      (await app.inject({ url: "/api/matches/torneos", headers: { authorization: `Bearer ${t}` } }))
+        .statusCode,
+    ).toBe(200);
+    expect((await app.inject("/api/public/torneos/t1/posiciones")).statusCode).toBe(200);
   });
   it("deja pasar subidas de imágenes de 1,5 MB, pero no de más de 3 MB", async () => {
     const app = await gw();

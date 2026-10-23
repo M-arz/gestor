@@ -72,6 +72,47 @@ describe("plantilla de servicio", () => {
   });
 });
 
+describe("cuerpos JSON", () => {
+  async function conEco() {
+    const app = await makeApp();
+    app.post("/eco", async (req) => ({ recibido: req.body ?? null }));
+    return app;
+  }
+  const json = { "content-type": "application/json" };
+  it("un cuerpo vacío con Content-Type JSON no es un error", async () => {
+    const app = await conEco();
+    const r = await app.inject({ method: "POST", url: "/eco", headers: json });
+    expect(r.statusCode).toBe(200);
+    expect(r.json()).toEqual({ recibido: null });
+  });
+  it("un JSON mal formado da 400 con el formato uniforme", async () => {
+    const app = await conEco();
+    const r = await app.inject({
+      method: "POST",
+      url: "/eco",
+      headers: json,
+      payload: "{no es json",
+    });
+    expect(r.statusCode).toBe(400);
+    expect(r.json().error.code).toBe("BAD_REQUEST");
+  });
+  it("sigue rechazando claves peligrosas (__proto__)", async () => {
+    const app = await conEco();
+    const r = await app.inject({
+      method: "POST",
+      url: "/eco",
+      headers: json,
+      payload: '{"__proto__":{"admin":true}}',
+    });
+    expect(r.statusCode).toBe(400);
+  });
+  it("un JSON normal se lee igual que antes", async () => {
+    const app = await conEco();
+    const r = await app.inject({ method: "POST", url: "/eco", headers: json, payload: { a: 1 } });
+    expect(r.json()).toEqual({ recibido: { a: 1 } });
+  });
+});
+
 describe("loadConfig", () => {
   it("falla si falta PORT", () => {
     expect(() => loadConfig({}, {})).toThrow(/PORT/);

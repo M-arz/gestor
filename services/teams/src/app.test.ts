@@ -467,6 +467,87 @@ describe("administradores de torneo", () => {
   });
 });
 
+describe("copias de matches-service (eventos entrantes)", () => {
+  const ev = (tipo: string, payload: object, id = randomUUID()) =>
+    app.service.aplicarEvento({ id, tipo, payload });
+  it("un administrador gana y pierde acceso solo por los eventos de torneo e inscripción", async () => {
+    const e = await equipo("ana");
+    const torneoId = randomUUID();
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin")).statusCode).toBe(403);
+    await ev("torneo.creado", { torneoId, nombre: "Copa", estado: "borrador", version: 1 });
+    await ev("torneo.administrador_agregado", { torneoId, usuarioId: ids.admin });
+    await ev("inscripcion.solicitada", {
+      inscripcionId: randomUUID(),
+      torneoId,
+      equipoId: e.id,
+      estado: "pendiente",
+      version: 1,
+    });
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin")).statusCode).toBe(200); // una solicitud pendiente ya permite revisarlo
+    await ev("inscripcion.aceptada", {
+      inscripcionId: randomUUID(),
+      torneoId,
+      equipoId: e.id,
+      estado: "aceptada",
+      version: 2,
+    });
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin")).statusCode).toBe(200);
+    await ev("inscripcion.retirada", {
+      inscripcionId: randomUUID(),
+      torneoId,
+      equipoId: e.id,
+      estado: "retirada",
+      version: 3,
+    });
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin")).statusCode).toBe(403);
+    await ev("inscripcion.aceptada", {
+      inscripcionId: randomUUID(),
+      torneoId,
+      equipoId: e.id,
+      estado: "aceptada",
+      version: 4,
+    });
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin")).statusCode).toBe(200);
+    await ev("torneo.administrador_retirado", { torneoId, usuarioId: ids.admin });
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin")).statusCode).toBe(403);
+  });
+  it("descarta eventos viejos o repetidos", async () => {
+    const e = await equipo("ana");
+    const torneoId = randomUUID();
+    await ev("torneo.administrador_agregado", { torneoId, usuarioId: ids.admin2 });
+    const id = randomUUID();
+    expect(
+      await ev(
+        "inscripcion.aceptada",
+        { torneoId, equipoId: e.id, estado: "aceptada", version: 5 },
+        id,
+      ),
+    ).toBe(true);
+    expect(
+      await ev(
+        "inscripcion.aceptada",
+        { torneoId, equipoId: e.id, estado: "aceptada", version: 5 },
+        id,
+      ),
+    ).toBe(false); // repetido
+    await ev("inscripcion.solicitada", {
+      torneoId,
+      equipoId: e.id,
+      estado: "pendiente",
+      version: 1,
+    }); // llega tarde: no debe pisar
+    const [fila] = await db
+      .select()
+      .from(schema.copiaInscripciones)
+      .where(eq(schema.copiaInscripciones.equipoId, e.id));
+    expect(fila).toMatchObject({ estado: "aceptada", version: 5 });
+    expect((await api("GET", `/equipos/${e.id}/jugadores`, "admin2")).statusCode).toBe(200);
+  });
+  it("ignora eventos que no usa", async () => {
+    expect(await ev("partido.programado", { partidoId: randomUUID() })).toBe(true);
+  });
+});
+
 describe("carnet digital", () => {
   it("trae nombre, dorsal, posición y equipo, con el documento enmascarado", async () => {
     const e = await equipo("ana", "Carnet FC");
@@ -578,5 +659,22 @@ describe("público y operación", () => {
     const r = await app.inject("/ready");
     expect(r.statusCode).toBe(200);
     expect(r.json().checks).toEqual({ db: "ok" });
+  });
+});
+
+describe("publicación del outbox", () => {
+  it("entrega los eventos de equipos y jugadores al bus una sola vez, sin datos personales", async () => {
+    const { crearOutboxStore } = await import("./bus.js");
+    const store = crearOutboxStore(db);
+    while ((await store.procesarLote(async () => {})) > 0);
+    const e = await equipo();
+    await jugador(e.id, { documento: "909090909", fechaNacimiento: "1991-02-03" });
+    const publicados: { tipo: string; payload: unknown }[] = [];
+    expect(await store.procesarLote(async (lote) => void publicados.push(...lote))).toBe(2);
+    expect(publicados.map((x) => x.tipo).sort()).toEqual(["equipo.creado", "jugador.agregado"]);
+    const texto = JSON.stringify(publicados);
+    expect(texto).not.toContain("909090909");
+    expect(texto).not.toContain("1991-02-03");
+    expect(await store.procesarLote(async () => {})).toBe(0);
   });
 });

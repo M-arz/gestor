@@ -10,5 +10,8 @@
   },
   "dependencies": {
     "@gestor/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.1"
   }
 }

@@ -39,6 +39,9 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    # Con persistencia (AOF): si Redis se reinicia no se pierden los eventos aún no consumidos.
+    command: redis-server --appendonly yes
+    volumes: [redisdata:/data]
     ports: ["127.0.0.1:6379:6379"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -72,6 +75,7 @@ services:
       redis: { condition: service_healthy }
       auth: { condition: service_healthy }
       teams: { condition: service_healthy }
+      matches: { condition: service_healthy }
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
       interval: 10s
@@ -129,7 +133,7 @@ services:
 
   matches:
     <<: *servicio
-    command: pnpm --filter @gestor/matches dev
+    command: sh -c "pnpm --filter @gestor/matches db:migrate && pnpm --filter @gestor/matches dev"
     environment:
       <<: *entorno-comun
       PORT: 3003
@@ -192,4 +196,5 @@ services:
 
 volumes:
   pgdata:
+  redisdata:
   teams_archivos:

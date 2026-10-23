@@ -291,3 +291,38 @@ describe("operación", () => {
     expect(filas.at(-1)?.ipHash).toMatch(/^[0-9a-f]{64}$/);
   });
 });
+
+describe("publicación del outbox", () => {
+  it("entrega los eventos pendientes al bus una sola vez", async () => {
+    const { crearOutboxStore } = await import("./bus.js");
+    const store = crearOutboxStore(db);
+    const correo = await registrar();
+    const publicados: { tipo: string; payload: unknown }[] = [];
+    let n = 0;
+    for (
+      let k = await store.procesarLote(async (lote) => void publicados.push(...lote));
+      k > 0;
+      k = await store.procesarLote(async (lote) => void publicados.push(...lote))
+    )
+      n += k;
+    expect(n).toBeGreaterThan(0);
+    const reg = publicados.find(
+      (e) => e.tipo === "usuario.registrado" && (e.payload as { correo: string }).correo === correo,
+    );
+    expect(reg?.payload).toMatchObject({ rol: "delegado", correo });
+    expect(JSON.stringify(reg?.payload)).not.toContain("contrasena");
+    expect(await store.procesarLote(async () => {})).toBe(0); // ya están marcados como publicados
+  });
+  it("si publicar falla, el evento queda pendiente", async () => {
+    const { crearOutboxStore } = await import("./bus.js");
+    const store = crearOutboxStore(db);
+    while ((await store.procesarLote(async () => {})) > 0);
+    await registrar();
+    await expect(
+      store.procesarLote(async () => {
+        throw new Error("redis caído");
+      }),
+    ).rejects.toThrow();
+    expect(await store.procesarLote(async () => {})).toBeGreaterThan(0);
+  });
+});

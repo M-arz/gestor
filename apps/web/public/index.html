@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GESTOR - Torneo de Fútbol</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#home">GESTOR</a>
+      <div class="d-flex align-items-center">
+        <span class="text-light me-3" id="userGreeting"></span>
+        <button class="btn btn-outline-light" id="btnLogin">Login</button>
+        <button class="btn btn-outline-light" id="btnLogout" style="display:none;">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container-fluid py-4">
+    <div class="row">
+      <div class="col-md-2">
+        <div class="list-group" id="menu">
+          <a class="list-group-item list-group-item-action active" href="#home">Inicio</a>
+          <a class="list-group-item list-group-item-action" href="#torneos">Torneos</a>
+          <a class="list-group-item list-group-item-action" href="#equipos">Equipos</a>
+          <a class="list-group-item list-group-item-action" href="#inscripciones">Mis Inscripciones</a>
+          <a class="list-group-item list-group-item-action" href="#posiciones">Posiciones</a>
+          <a class="list-group-item list-group-item-action" href="#estadisticas">Estadísticas</a>
+        </div>
+      </div>
+
+      <div class="col-md-10">
+        <!-- Inicio -->
+        <section id="home" class="vista">
+          <h2>Bienvenido a GESTOR</h2>
+          <p>Sistema de gestión de torneos de fútbol sobre microservicios.</p>
+          <div class="alert alert-info">
+            Puedes ver torneos, posiciones y fixture <strong>sin iniciar sesión</strong>.
+            Para crear torneos, equipos e inscribirte necesitas una cuenta.
+          </div>
+          <div id="homePublico"></div>
+        </section>
+
+        <!-- Torneos -->
+        <section id="torneos" class="vista d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Torneos</h2>
+            <button class="btn btn-success" id="btnCrearTorneo" style="display:none;">Crear Torneo</button>
+          </div>
+          <div id="listaTorneos"></div>
+        </section>
+
+        <!-- Equipos -->
+        <section id="equipos" class="vista d-none">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>Mis Equipos</h2>
+            <button class="btn btn-success" id="btnCrearEquipo" style="display:none;">Crear Equipo</button>
+          </div>
+          <div id="listaEquipos"></div>
+        </section>
+
+        <!-- Inscripciones -->
+        <section id="inscripciones" class="vista d-none">
+          <h2 class="mb-3">Mis Inscripciones</h2>
+          <div id="listaInscripciones"></div>
+        </section>
+
+        <!-- Posiciones -->
+        <section id="posiciones" class="vista d-none">
+          <h2 class="mb-3">Tabla de Posiciones</h2>
+          <select id="selectPosiciones" class="form-select mb-3" style="max-width:420px;"></select>
+          <div id="tablaPosiciones"></div>
+        </section>
+
+        <!-- Estadísticas -->
+        <section id="estadisticas" class="vista d-none">
+          <h2 class="mb-3">Estadísticas</h2>
+          <select id="selectEstadisticas" class="form-select mb-3" style="max-width:420px;"></select>
+          <div id="contenidoEstadisticas"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Login / Registro -->
+  <div class="modal fade" id="modalAuth" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <ul class="nav nav-tabs card-header-tabs" id="authTabs">
+            <li class="nav-item">
+              <button class="nav-link active" data-tab="login">Iniciar sesión</button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-tab="registro">Crear cuenta</button>
+            </li>
+          </ul>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="authError" class="alert alert-danger d-none"></div>
+
+          <form id="formLogin">
+            <div class="mb-3">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-control" id="loginCorreo" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" class="form-control" id="loginPassword" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+          </form>
+
+          <form id="formRegistro" class="d-none">
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="regNombre" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Correo</label>
+              <input type="email" class="form-control" id="regCorreo" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Contraseña (mínimo 10 caracteres)</label>
+              <input type="password" class="form-control" id="regPassword" minlength="10" required>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="regPolitica" required>
+              <label class="form-check-label" for="regPolitica">
+                Acepto la política de tratamiento de datos
+              </label>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Registrarme</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal detalle de torneo -->
+  <div class="modal fade" id="modalDetalle" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detalleTitulo">Torneo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detalleCuerpo"></div>
+        <div class="modal-footer" id="detalleFooter"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
