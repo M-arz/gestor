@@ -1,0 +1,21 @@
+# Imagen de desarrollo compartida por todos los servicios.
+# Las dependencias se instalan aquí; el código fuente (src) se monta como volumen
+# desde docker-compose para tener recarga automática.
+FROM node:22-alpine
+RUN npm install -g pnpm@9.15.0
+WORKDIR /app
+
+COPY package.json pnpm-workspace.yaml ./
+COPY packages/shared/package.json packages/shared/
+COPY services/gateway/package.json services/gateway/
+COPY services/auth/package.json services/auth/
+COPY services/teams/package.json services/teams/
+COPY services/matches/package.json services/matches/
+COPY services/discipline/package.json services/discipline/
+COPY services/notifications/package.json services/notifications/
+RUN pnpm install
+
+COPY . .
+# Carpeta de escudos y fotos (teams-service). Debe ser de 'node' para poder escribir.
+RUN mkdir -p /data/archivos && chown node:node /data/archivos
+USER node

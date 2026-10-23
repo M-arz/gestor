@@ -1,0 +1,28 @@
+# Dependencias y compilados
+node_modules/
+dist/
+coverage/
+
+# Secretos: cualquier .env* se ignora, salvo los de ejemplo
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Claves y certificados
+*.pem
+*.key
+*.p12
+
+# Datos reales o volcados (nunca al repositorio)
+*.dump
+*.sql.gz
+backups/
+dumps/
+
+# Ruido del sistema y del editor
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+{
+  "name": "@gestor/web",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "npx serve public -l 3000"
+  }
+}

@@ -1,0 +1,600 @@
+{
+  "id": "fd16610f-7f9f-4c7a-ab46-93c9ba25b9cb",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.auditoria_teams": {
+      "name": "auditoria_teams",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "equipo_id": {
+          "name": "equipo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jugador_id": {
+          "name": "jugador_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accion": {
+          "name": "accion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "detalle": {
+          "name": "detalle",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.copia_administradores_torneo": {
+      "name": "copia_administradores_torneo",
+      "schema": "",
+      "columns": {
+        "torneo_id": {
+          "name": "torneo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "copia_administradores_torneo_torneo_id_usuario_id_pk": {
+          "name": "copia_administradores_torneo_torneo_id_usuario_id_pk",
+          "columns": ["torneo_id", "usuario_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.copia_inscripciones": {
+      "name": "copia_inscripciones",
+      "schema": "",
+      "columns": {
+        "equipo_id": {
+          "name": "equipo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "torneo_id": {
+          "name": "torneo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "copia_inscripciones_equipo_id_torneo_id_pk": {
+          "name": "copia_inscripciones_equipo_id_torneo_id_pk",
+          "columns": ["equipo_id", "torneo_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.copia_torneos": {
+      "name": "copia_torneos",
+      "schema": "",
+      "columns": {
+        "torneo_id": {
+          "name": "torneo_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.equipos": {
+      "name": "equipos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "municipio": {
+          "name": "municipio",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "escudo_url": {
+          "name": "escudo_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "delegado_id": {
+          "name": "delegado_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'activo'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "eliminado_en": {
+          "name": "eliminado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "equipos_delegado_nombre_unico": {
+          "name": "equipos_delegado_nombre_unico",
+          "columns": [
+            {
+              "expression": "delegado_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lower(\"nombre\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"equipos\".\"eliminado_en\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "equipos_delegado_idx": {
+          "name": "equipos_delegado_idx",
+          "columns": [
+            {
+              "expression": "delegado_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "equipos_estado_chk": {
+          "name": "equipos_estado_chk",
+          "value": "\"equipos\".\"estado\" in ('activo','sin_delegado')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.eventos_procesados": {
+      "name": "eventos_procesados",
+      "schema": "",
+      "columns": {
+        "evento_id": {
+          "name": "evento_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "procesado_en": {
+          "name": "procesado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.eventos_salida": {
+      "name": "eventos_salida",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "publicado_en": {
+          "name": "publicado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "eventos_salida_pendientes_idx": {
+          "name": "eventos_salida_pendientes_idx",
+          "columns": [
+            {
+              "expression": "publicado_en",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.jugadores": {
+      "name": "jugadores",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "equipo_id": {
+          "name": "equipo_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombres": {
+          "name": "nombres",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apellidos": {
+          "name": "apellidos",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo_documento": {
+          "name": "tipo_documento",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documento_cifrado": {
+          "name": "documento_cifrado",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "documento_hash": {
+          "name": "documento_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_nacimiento": {
+          "name": "fecha_nacimiento",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dorsal": {
+          "name": "dorsal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "posicion": {
+          "name": "posicion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto_url": {
+          "name": "foto_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "autorizacion_acudiente": {
+          "name": "autorizacion_acudiente",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "autorizacion_acudiente_en": {
+          "name": "autorizacion_acudiente_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "autorizacion_registrada_por": {
+          "name": "autorizacion_registrada_por",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "eliminado_en": {
+          "name": "eliminado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "jugadores_equipo_documento_unico": {
+          "name": "jugadores_equipo_documento_unico",
+          "columns": [
+            {
+              "expression": "equipo_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "documento_hash",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"jugadores\".\"eliminado_en\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "jugadores_equipo_dorsal_unico": {
+          "name": "jugadores_equipo_dorsal_unico",
+          "columns": [
+            {
+              "expression": "equipo_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "dorsal",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"jugadores\".\"eliminado_en\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "jugadores_equipo_idx": {
+          "name": "jugadores_equipo_idx",
+          "columns": [
+            {
+              "expression": "equipo_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "jugadores_equipo_id_equipos_id_fk": {
+          "name": "jugadores_equipo_id_equipos_id_fk",
+          "tableFrom": "jugadores",
+          "tableTo": "equipos",
+          "columnsFrom": ["equipo_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "jugadores_dorsal_chk": {
+          "name": "jugadores_dorsal_chk",
+          "value": "\"jugadores\".\"dorsal\" between 0 and 99"
+        },
+        "jugadores_posicion_chk": {
+          "name": "jugadores_posicion_chk",
+          "value": "\"jugadores\".\"posicion\" in ('portero','defensa','mediocampista','delantero')"
+        },
+        "jugadores_tipo_documento_chk": {
+          "name": "jugadores_tipo_documento_chk",
+          "value": "\"jugadores\".\"tipo_documento\" in ('RC','TI','CC','CE','PPT','PEP','PA')"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
