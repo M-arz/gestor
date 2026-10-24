@@ -33,6 +33,8 @@ const AUTH_SENSIBLES = new Set([
   "/api/auth/login",
   "/api/auth/register",
   "/api/auth/register-admin",
+  "/api/auth/register-admin/request",
+  "/api/auth/register-admin/complete",
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
 ]);

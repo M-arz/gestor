@@ -537,15 +537,15 @@ async function enviarRegistro(e) {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnLogin").addEventListener("click", () => abrirAuth("login"));
   document.getElementById("btnLogout").addEventListener("click", async () => {
-    try {
-      await api("/api/auth/logout", { method: "POST" });
-    } catch {
-      /* la cookie puede no existir */
-    }
-    cerrarSesionLocal();
-    location.hash = "#home";
-    mostrarVista("home");
-  });
+  try {
+    await api("/api/auth/logout", { method: "POST" });
+  } catch {
+    // La sesión local se cerrará igualmente.
+  }
+
+  cerrarSesionLocal();
+  window.location.replace("/login/");
+});
 
   document.querySelectorAll("#authTabs button").forEach((b) =>
     b.addEventListener("click", () => cambiarTab(b.dataset.tab)),
@@ -559,5 +559,13 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("selectEstadisticas").addEventListener("change", mostrarEstadisticas);
 
   pintarSesion();
-  restaurarSesion().then(() => mostrarVista(location.hash.slice(1) || "home"));
+  restaurarSesion().then(() => {
+  if (!token || !usuario) {
+    window.location.replace("/login/");
+    return;
+  }
+
+  pintarSesion();
+  mostrarVista(location.hash.slice(1) || "home");
+});
 });

@@ -4,6 +4,7 @@ import type { AuthConfig } from "../config.js";
 import type { Db } from "../db/types.js";
 import { eventosRepo } from "../repositories/eventos.repo.js";
 import { codigosRepo, recuperacionesRepo, sesionesRepo } from "../repositories/tokens.repo.js";
+import { solicitudesRepo } from "../repositories/solicitudes.repo.js";
 import { type Usuario, usuariosRepo } from "../repositories/usuarios.repo.js";
 import {
   hashIp,
@@ -110,8 +111,9 @@ export function createAuthService({ db, config, now = () => new Date() }: AuthSe
     ctx: Ctx,
     t: Date,
     extra?: (tx: Db, usuarioId: string) => Promise<void>,
+    contrasenaHashExistente?: string
   ): Promise<UsuarioPublico> {
-    const contrasenaHash = await hashPassword(input.contrasena);
+    const contrasenaHash = contrasenaHashExistente ?? (await hashPassword(input.contrasena));
     const id = randomUUID();
     try {
       await db.transaction(async (tx) => {
@@ -155,6 +157,191 @@ export function createAuthService({ db, config, now = () => new Date() }: AuthSe
     registrarDelegado: (input: { correo: string; nombre: string; contrasena: string }, ctx: Ctx) =>
       crearUsuario("delegado", input, ctx, now()),
 
+
+
+
+
+async solicitarRegistroAdmin(
+  input: {
+    correo: string;
+    nombre: string;
+    contrasena: string;
+    aceptaPolitica: true;
+  },
+  ctx: Ctx,
+) {
+  if (input.aceptaPolitica !== true) {
+    throw new AppError(
+      400,
+      "POLICY_NOT_ACCEPTED",
+      "Debes aceptar la política",
+    );
+  }
+
+  const t = now();
+  const correoNormalizado = input.correo.trim().toLowerCase();
+
+  if (await usuariosRepo.findByCorreo(db, correoNormalizado)) {
+    throw Errors.conflict("Ya existe una cuenta con ese correo");
+  }
+
+  const contrasenaHash = await hashPassword(input.contrasena);
+  const id = randomUUID();
+  const expiraEn = add(t, 24 * 60 * 60 * 1000);
+
+  await solicitudesRepo.insert(db, {
+    id,
+    correo: correoNormalizado,
+    nombre: input.nombre.trim(),
+    contrasenaHash,
+    versionPolitica: config.POLICY_VERSION,
+    ipHash: ipHash(ctx),
+    expiraEn,
+    creadoEn: t,
+  });
+
+  await eventosRepo.auditoria(db, {
+    accion: "solicitud_admin_creada",
+    detalle: { solicitudId: id },
+    ipHash: ipHash(ctx),
+    ahora: t,
+  });
+
+  return {
+    solicitudId: id,
+    mensaje: "Solicitud guardada. Introduce tu código de acceso para continuar.",
+    expiraEn,
+  };
+},
+
+
+async completarRegistroAdmin(
+  input: { solicitudId: string; codigo: string },
+  ctx: Ctx,
+): Promise<UsuarioPublico> {
+  const t = now();
+  const invalido = new AppError(
+    400,
+    "INVALID_ACCESS_CODE",
+    "La solicitud o el código de acceso no son válidos o han vencido",
+  );
+
+  const solicitud = await solicitudesRepo.findById(db, input.solicitudId);
+
+  if (
+    !solicitud ||
+    solicitud.completadaEn ||
+    solicitud.expiraEn <= t
+  ) {
+    throw invalido;
+  }
+
+  const [codigoId, secreto] = input.codigo.split(".");
+
+  if (!codigoId || !secreto || !/^[0-9a-f-]{36}$/i.test(codigoId)) {
+    throw invalido;
+  }
+
+  const codigo = await codigosRepo.findById(db, codigoId);
+
+  if (
+    !codigo ||
+    codigo.usadoEn ||
+    codigo.expiraEn <= t ||
+    codigo.intentosFallidos >= MAX_INTENTOS_CODIGO
+  ) {
+    throw invalido;
+  }
+
+  if (!safeEqualHex(sha256(secreto), codigo.codigoHash)) {
+    await codigosRepo.sumarFallo(db, codigo.id, codigo.intentosFallidos);
+    await eventosRepo.auditoria(db, {
+      accion: "codigo_admin_fallido",
+      detalle: { codigoId: codigo.id },
+      ipHash: ipHash(ctx),
+      ahora: t,
+    });
+    throw invalido;
+  }
+
+  if (
+    codigo.correoDestino &&
+    codigo.correoDestino.toLowerCase() !== solicitud.correo
+  ) {
+    throw invalido;
+  }
+
+  const usuarioId = randomUUID();
+
+  try {
+    await db.transaction(async (tx) => {
+      // Evita completar una solicitud más de una vez.
+      if (!(await solicitudesRepo.completar(tx, solicitud.id, t))) {
+        throw invalido;
+      }
+
+      await usuariosRepo.insert(tx, {
+        id: usuarioId,
+        correo: solicitud.correo,
+        nombre: solicitud.nombre,
+        contrasenaHash: solicitud.contrasenaHash,
+        rol: "admin",
+        creadoEn: t,
+        actualizadoEn: t,
+      });
+
+      await eventosRepo.consentimiento(tx, {
+        usuarioId,
+        version: solicitud.versionPolitica,
+        ipHash: solicitud.ipHash,
+        ahora: t,
+      });
+
+      await eventosRepo.outbox(
+        tx,
+        "usuario.registrado",
+        {
+          usuarioId,
+          correo: solicitud.correo,
+          nombre: solicitud.nombre,
+          rol: "admin",
+        },
+        t,
+      );
+
+      if (!(await codigosRepo.consumir(tx, codigo.id, usuarioId, t))) {
+        throw invalido;
+      }
+
+      await eventosRepo.auditoria(tx, {
+        usuarioId,
+        accion: "registro_admin",
+        ipHash: ipHash(ctx),
+        ahora: t,
+      });
+
+      await eventosRepo.auditoria(tx, {
+        usuarioId,
+        accion: "codigo_admin_usado",
+        detalle: { codigoId: codigo.id },
+        ipHash: ipHash(ctx),
+        ahora: t,
+      });
+    });
+  } catch (e) {
+    if (esViolacionUnica(e)) {
+      throw Errors.conflict("Ya existe una cuenta con ese correo");
+    }
+    throw e;
+  }
+
+  return {
+    id: usuarioId,
+    correo: solicitud.correo,
+    nombre: solicitud.nombre,
+    rol: "admin",
+  };
+},
     /** El código tiene la forma `<id>.<secreto>`; en la base solo está el hash del secreto. */
     async registrarAdmin(
       input: { codigo: string; correo: string; nombre: string; contrasena: string },

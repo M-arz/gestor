@@ -14,6 +14,12 @@ const aceptaPolitica = z.literal(true, {
 
 const registro = z.object({ correo, nombre, contrasena, aceptaPolitica });
 const registroAdmin = registro.extend({ codigo: z.string().min(10).max(200) });
+const solicitudRegistroAdmin = registro;
+
+const completarRegistroAdmin = z.object({
+  solicitudId: z.string().uuid(),
+  codigo: z.string().min(10).max(200),
+});
 const login = z.object({ correo, contrasena: z.string().min(1).max(128) });
 const olvido = z.object({ correo });
 const restablecer = z.object({ token: z.string().min(20).max(200), contrasena });
@@ -50,6 +56,20 @@ export function authRoutes(
 
     app.post("/register-admin", async (req, reply) => {
       const usuario = await service.registrarAdmin(registroAdmin.parse(req.body), ctx(req));
+      return reply.status(201).send({ usuario });
+    });
+
+    app.post("/register-admin/request", async (req, reply) => {
+     const input = solicitudRegistroAdmin.parse(req.body);
+     const resultado = await service.solicitarRegistroAdmin(input, ctx(req));
+     return reply.status(201).send(resultado);
+    });
+
+    app.post("/register-admin/complete", async (req, reply) => {
+      const input = completarRegistroAdmin.parse(req.body);
+
+      const usuario = await service.completarRegistroAdmin(input, ctx(req));
+
       return reply.status(201).send({ usuario });
     });
 

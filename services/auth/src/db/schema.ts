@@ -117,3 +117,24 @@ export const eventosProcesados = pgTable("eventos_procesados", {
   eventoId: uuid("evento_id").primaryKey(),
   procesadoEn: ts("procesado_en").notNull().defaultNow(),
 });
+
+
+
+export const solicitudesAdmin = pgTable(
+  "solicitudes_admin",
+  {
+    id: uuid("id").primaryKey(),
+    correo: text("correo").notNull(),
+    nombre: text("nombre").notNull(),
+    contrasenaHash: text("contrasena_hash").notNull(),
+    versionPolitica: text("version_politica").notNull(),
+    ipHash: text("ip_hash"),
+    expiraEn: ts("expira_en").notNull(),
+    completadaEn: ts("completada_en"),
+    creadoEn: ts("creado_en").notNull().defaultNow(),
+  },
+  (t) => [
+    index("solicitudes_admin_correo_idx").on(t.correo),
+    index("solicitudes_admin_pendientes_idx").on(t.expiraEn, t.completadaEn),
+  ],
+);
