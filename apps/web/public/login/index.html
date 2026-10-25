@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#061629">
+
   <title>Iniciar sesión | GESTOR</title>
 
   <link
@@ -12,53 +14,168 @@
   >
   <link rel="stylesheet" href="../style.css">
 </head>
-<body>
-  <main class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
-    <section class="card shadow-lg border-0 w-100" style="max-width: 440px;">
-      <div class="card-body p-4 p-md-5">
-        <div class="text-center mb-4">
-          <h1 class="fw-bold">GESTOR</h1>
-          <p class="text-secondary mb-0">Accede a tu panel de gestión</p>
+
+<body class="login-page">
+  <main class="login-layout">
+
+    <!-- Panel de identidad -->
+    <section class="login-brand">
+      <div class="brand-content">
+
+        <span class="brand-label">
+          <span class="status-dot"></span>
+          PLATAFORMA DE GESTIÓN DEPORTIVA
+        </span>
+
+        <div class="brand-logo">
+          <img
+            src="../assets/logo-gestor.png"
+            alt="Logo de GESTOR"
+          >
         </div>
 
-        <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+        <div class="brand-message">
+          <span class="brand-tag">GESTIÓN DEPORTIVA</span>
+
+          <h1>El fútbol se juega.<br>GESTOR lo organiza.</h1>
+
+          <p>
+            Administra torneos, organiza partidos y coordina
+            equipos desde un solo lugar.
+          </p>
+        </div>
+
+        <div class="brand-footer">
+          <span>GESTIÓN</span>
+          <span class="footer-separator"></span>
+          <span>ORGANIZACIÓN</span>
+          <span class="footer-separator"></span>
+          <span>COMPETENCIA</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Formulario de acceso -->
+    <section class="login-content">
+      <div class="login-card">
+
+        <div class="mobile-logo">
+          <img
+            src="../assets/logo-gestor.png"
+            alt="Logo de GESTOR"
+          >
+        </div>
+
+        <div class="login-heading">
+          <span class="eyebrow">BIENVENIDO DE NUEVO</span>
+          <h2>Inicia sesión</h2>
+          <p>Ingresa tus credenciales para continuar.</p>
+        </div>
+
+        <div
+          id="loginError"
+          class="alert alert-danger d-none"
+          role="alert"
+          aria-live="polite"
+        ></div>
 
         <form id="loginForm">
-          <div class="mb-3">
-            <label for="correo" class="form-label">Correo electrónico</label>
-            <input
-              type="email"
-              class="form-control"
-              id="correo"
-              autocomplete="email"
-              required
-            >
+          <div class="field-group">
+            <label for="correo">Correo electrónico</label>
+
+            <div class="input-shell">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="5" width="18" height="14" rx="3"/>
+                  <path d="m4 7 8 6 8-6"/>
+                </svg>
+              </span>
+
+              <input
+                type="email"
+                id="correo"
+                name="correo"
+                placeholder="tu@correo.com"
+                autocomplete="email"
+                maxlength="254"
+                required
+              >
+            </div>
           </div>
 
-          <div class="mb-4">
-            <label for="contrasena" class="form-label">Contraseña</label>
-            <input
-              type="password"
-              class="form-control"
-              id="contrasena"
-              autocomplete="current-password"
-              required
-            >
+          <div class="field-group">
+            <label for="contrasena">Contraseña</label>
+
+            <div class="input-shell">
+              <span class="input-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="5" y="10" width="14" height="11" rx="2"/>
+                  <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+                  <path d="M12 14v3"/>
+                </svg>
+              </span>
+
+              <input
+                type="password"
+                id="contrasena"
+                name="contrasena"
+                placeholder="Ingresa tu contraseña"
+                autocomplete="current-password"
+                required
+              >
+
+              <button
+                class="password-toggle"
+                type="button"
+                id="togglePassword"
+                aria-label="Mostrar contraseña"
+                aria-pressed="false"
+              >
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
-          <button id="loginButton" type="submit" class="btn btn-primary w-100">
-            Iniciar sesión
+          <button
+            id="loginButton"
+            type="submit"
+            class="login-submit"
+          >
+            <span>Iniciar sesión</span>
+
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"/>
+            </svg>
           </button>
         </form>
 
-        <p class="text-center mt-4 mb-0">
-          ¿No tienes cuenta?
-          <a href="../registro/">Crear una cuenta</a>
+        <div class="login-divider">
+          <span></span>
+          <span>¿ERES NUEVO EN GESTOR?</span>
+          <span></span>
+        </div>
+
+        <a href="../registro/" class="register-link">
+          Crear una cuenta
+          <span aria-hidden="true">↗</span>
+        </a>
+
+        <p class="login-legal">
+          Accede a tu espacio de gestión y lleva tus competiciones
+          al siguiente nivel.
         </p>
       </div>
+
+      <footer class="content-footer">
+        <span class="footer-dot"></span>
+        GESTOR · Gestión de torneos y partidos
+      </footer>
     </section>
   </main>
 
-  <script src="login.js"></script>
+  <script src="./login.js"></script>
 </body>
 </html>

@@ -4,14 +4,29 @@ const API = "http://localhost:8080";
 const form = document.getElementById("loginForm");
 const errorBox = document.getElementById("loginError");
 const button = document.getElementById("loginButton");
+const buttonText = button.querySelector("span");
+const passwordInput = document.getElementById("contrasena");
+const passwordToggle = document.getElementById("togglePassword");
+
+passwordToggle.addEventListener("click", () => {
+  const mostrar = passwordInput.type === "password";
+
+  passwordInput.type = mostrar ? "text" : "password";
+  passwordToggle.setAttribute("aria-pressed", String(mostrar));
+  passwordToggle.setAttribute(
+    "aria-label",
+    mostrar ? "Ocultar contraseña" : "Mostrar contraseña"
+  );
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   errorBox.classList.add("d-none");
   errorBox.textContent = "";
+
   button.disabled = true;
-  button.textContent = "Verificando...";
+  buttonText.textContent = "Verificando...";
 
   try {
     const response = await fetch(`${API}/api/auth/login`, {
@@ -22,7 +37,7 @@ form.addEventListener("submit", async (event) => {
       credentials: "include",
       body: JSON.stringify({
         correo: document.getElementById("correo").value.trim(),
-        contrasena: document.getElementById("contrasena").value
+        contrasena: passwordInput.value
       })
     });
 
@@ -30,7 +45,9 @@ form.addEventListener("submit", async (event) => {
 
     if (!response.ok) {
       throw new Error(
-        data?.error?.message || data?.message || "No se pudo iniciar sesión."
+        data?.error?.message ||
+        data?.message ||
+        "No se pudo iniciar sesión."
       );
     }
 
@@ -39,15 +56,19 @@ form.addEventListener("submit", async (event) => {
     }
 
     localStorage.setItem("gestor_token", data.accessToken);
-    localStorage.setItem("gestor_usuario", JSON.stringify(data.usuario));
+    localStorage.setItem(
+      "gestor_usuario",
+      JSON.stringify(data.usuario)
+    );
 
     window.location.replace("/");
   } catch (error) {
     errorBox.textContent =
       error.message || "No se pudo conectar con el servidor.";
+
     errorBox.classList.remove("d-none");
   } finally {
     button.disabled = false;
-    button.textContent = "Iniciar sesión";
+    buttonText.textContent = "Iniciar sesión";
   }
 });
