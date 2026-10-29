@@ -101,7 +101,7 @@ function exigirSesion() {
 // ---------- navegación por hash ----------
 
 function mostrarVista(nombre) {
-  const validas = ["home", "torneos", "equipos", "inscripciones", "posiciones", "estadisticas"];
+  const validas = ["home", "torneos", "equipos", "inscripciones", "posiciones", "estadisticas", "perfil"];
   const vista = validas.includes(nombre) ? nombre : "home";
   document.querySelectorAll(".vista").forEach((s) => s.classList.add("d-none"));
   document.getElementById(vista).classList.remove("d-none");
@@ -114,6 +114,7 @@ function mostrarVista(nombre) {
   if (vista === "inscripciones") cargarInscripciones();
   if (vista === "posiciones") cargarSelectorPosiciones();
   if (vista === "estadisticas") cargarSelectorEstadisticas();
+  if (vista === "perfil") cargarPerfil();
 }
 
 window.addEventListener("hashchange", () => mostrarVista(location.hash.slice(1)));
@@ -532,6 +533,30 @@ async function enviarRegistro(e) {
   }
 }
 
+// ---------- perfil ----------
+
+async function cargarPerfil() {
+  const cont = document.getElementById("perfilContenido");
+  if (!usuario) {
+    cont.innerHTML = tarjeta("<p class='mb-0'>Inicia sesi??n para ver tu perfil.</p>");
+    return;
+  }
+  try {
+    const r = await api("/api/auth/me");
+    usuario = r.usuario;
+    localStorage.setItem("gestor_usuario", JSON.stringify(usuario));
+    pintarSesion();
+    cont.innerHTML = tarjeta(`
+      <p class="mb-1"><strong>Nombre:</strong> ${usuario.nombre}</p>
+      <p class="mb-1"><strong>Correo:</strong> ${usuario.correo}</p>
+      <p class="mb-1"><strong>Rol:</strong> ${usuario.rol}</p>
+      <p class="mb-0"><strong>ID:</strong> <code>${usuario.id}</code></p>
+    `);
+  } catch (e) {
+    cont.innerHTML = tarjeta(`<p class='text-danger mb-0'>${e.message}</p>`);
+  }
+}
+
 // ---------- init ----------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -559,5 +584,14 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("selectEstadisticas").addEventListener("change", mostrarEstadisticas);
 
   pintarSesion();
-  restaurarSesion().then(() => mostrarVista(location.hash.slice(1) || "home"));
+  restaurarSesion().then(() => {
+    if (!token || !usuario) {
+      window.location.replace("/login/");
+      return;
+    }
+
+    pintarSesion();
+    cargarPerfil();
+    mostrarVista(location.hash.slice(1) || "home");
+  });
 });

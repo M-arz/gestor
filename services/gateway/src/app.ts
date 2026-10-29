@@ -54,7 +54,7 @@ export async function buildApp(opts: GatewayOptions) {
   const now = opts.now ?? (() => new Date());
 
   await app.register(cors, {
-    origin: opts.corsOrigins,
+    origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:60833"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

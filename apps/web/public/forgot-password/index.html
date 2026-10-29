@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar contrase??a | GESTOR</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <main class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
+    <section class="card shadow-lg border-0 w-100" style="max-width: 440px;">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <h1 class="fw-bold">GESTOR</h1>
+          <p class="text-secondary mb-0">Recuperar contrase??a</p>
+        </div>
+
+        <div id="forgotError" class="alert alert-danger d-none" role="alert"></div>
+        <div id="forgotExito" class="alert alert-success d-none" role="status"></div>
+
+        <form id="forgotForm">
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo electr??nico</label>
+            <input type="email" class="form-control" id="correo" autocomplete="email" required>
+          </div>
+          <button id="forgotButton" type="submit" class="btn btn-primary w-100">
+            Enviar enlace
+          </button>
+        </form>
+
+        <p class="text-center mt-4 mb-0">
+          <a href="../login/">Volver a iniciar sesi??n</a>
+        </p>
+      </div>
+    </section>
+  </main>
+  <script src="forgot-password.js"></script>
+</body>
+</html>
