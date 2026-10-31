@@ -176,6 +176,23 @@ describe("torneos y administradores", () => {
     await estado(id, admin, "inscripciones_abiertas");
     expect((await api("GET", P(`/torneos/${id}`))).statusCode).toBe(200);
   });
+  it("el delegado solo ve torneos con inscripciones abiertas", async () => {
+    const admin = await usuario("admin");
+    const del = await usuario("delegado");
+    const abierto = await nuevoTorneo(admin, { nombre: "Abierto", temporada: "2026" });
+    await estado(abierto, admin, "inscripciones_abiertas");
+    const enJuego = await nuevoTorneo(admin, { nombre: "En juego", temporada: "2026" });
+    await estado(enJuego, admin, "en_juego");
+    const finalizado = await nuevoTorneo(admin, { nombre: "Final", temporada: "2026" });
+    await estado(finalizado, admin, "finalizado");
+
+    const r = await api("GET", M("/torneos"), del);
+    expect(r.statusCode).toBe(200);
+    const ids = (r.json().torneos as { id: string }[]).map((t) => t.id);
+    expect(ids).toContain(abierto);
+    expect(ids).not.toContain(enJuego);
+    expect(ids).not.toContain(finalizado);
+  });
   it("tener la cuenta admin no basta: hay que administrar ESE torneo", async () => {
     const a = await usuario("admin");
     const otro = await usuario("admin");

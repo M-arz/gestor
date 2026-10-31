@@ -97,10 +97,12 @@ export function crearTorneosService({ db, now }: Ctx) {
           .orderBy(desc(torneos.creadoEn));
         return filas.map((f) => vistaTorneo(f.t));
       }
+      // El delegado solo ve torneos que admiten solicitud de inscripción; el resto
+      // se consideran no elegibles para pedir plaza desde la app.
       const filas = await db
         .select()
         .from(torneos)
-        .where(inArray(torneos.estado, ["inscripciones_abiertas", "en_juego", "finalizado"]))
+        .where(eq(torneos.estado, "inscripciones_abiertas"))
         .orderBy(desc(torneos.creadoEn));
       return filas.map(vistaTorneo);
     },

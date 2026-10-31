@@ -53,8 +53,27 @@ export async function buildApp(opts: GatewayOptions) {
   });
   const now = opts.now ?? (() => new Date());
 
+  const configuredOrigins = new Set((opts.corsOrigins ?? []).filter(Boolean));
+  const esOrigenLocal = (origin: string) => {
+    try {
+      const { protocol, hostname } = new URL(origin);
+      return (
+        (protocol === "http:" || protocol === "https:") &&
+        ["localhost", "127.0.0.1", "::1"].includes(hostname)
+      );
+    } catch {
+      return false;
+    }
+  };
+
   await app.register(cors, {
-    origin: ["http://localhost:5173", "http://localhost:3000", "http://localhost:60833"],
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (configuredOrigins.has(origin) || esOrigenLocal(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

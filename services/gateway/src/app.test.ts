@@ -162,6 +162,14 @@ describe("gateway", () => {
     });
     expect(bueno.headers["access-control-allow-origin"]).toBe("http://localhost:5173");
     expect(bueno.headers["access-control-allow-credentials"]).toBe("true");
+
+    const preview = await app.inject({
+      method: "OPTIONS",
+      url: "/api/auth/login",
+      headers: { origin: "http://localhost:59152", "access-control-request-method": "POST" },
+    });
+    expect(preview.headers["access-control-allow-origin"]).toBe("http://localhost:59152");
+
     const malo = await app.inject({
       method: "OPTIONS",
       url: "/api/auth/login",

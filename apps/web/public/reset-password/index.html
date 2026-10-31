@@ -3,40 +3,60 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restablecer contrase??a | GESTOR</title>
+  <meta name="theme-color" content="#061629">
+  <title>Restablecer contraseña | GESTOR</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
 </head>
-<body>
-  <main class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
-    <section class="card shadow-lg border-0 w-100" style="max-width: 440px;">
-      <div class="card-body p-4 p-md-5">
-        <div class="text-center mb-4">
-          <h1 class="fw-bold">GESTOR</h1>
-          <p class="text-secondary mb-0">Restablecer contrase??a</p>
+<body class="auth-compact-page">
+  <main class="auth-compact-layout">
+    <section class="auth-compact-card">
+      <div class="auth-compact-header">
+        <div class="auth-logo-wrap">
+          <img src="../assets/logo-gestor.png" alt="Logo de GESTOR">
+        </div>
+        <p class="auth-eyebrow">NUEVA CONTRASEÑA</p>
+        <h1>Restablecer contraseña</h1>
+        <p class="auth-subtitle">Introduce tu nueva contraseña para continuar.</p>
+      </div>
+
+      <div id="resetError" class="auth-alert auth-alert-error d-none" role="alert" aria-live="polite"></div>
+      <div id="resetExito" class="auth-alert auth-alert-success d-none" role="status" aria-live="polite"></div>
+
+      <form id="resetForm" class="auth-form">
+        <div class="auth-field-group">
+          <label for="contrasena">Nueva contraseña</label>
+          <div class="auth-input-shell">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="10" width="14" height="11" rx="2"></rect>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </span>
+            <input type="password" id="contrasena" name="contrasena" minLength="10" autocomplete="new-password" placeholder="Mínimo 10 caracteres" required>
+          </div>
         </div>
 
-        <div id="resetError" class="alert alert-danger d-none" role="alert"></div>
-        <div id="resetExito" class="alert alert-success d-none" role="status"></div>
-
-        <form id="resetForm">
-          <div class="mb-3">
-            <label for="contrasena" class="form-label">Nueva contrase??a</label>
-            <input type="password" class="form-control" id="contrasena" minlength="10" autocomplete="new-password" required>
-            <div class="form-text">La contrase??a debe tener al menos 10 caracteres.</div>
+        <div class="auth-field-group">
+          <label for="contrasena2">Repetir contraseña</label>
+          <div class="auth-input-shell">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="10" width="14" height="11" rx="2"></rect>
+                <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
+              </svg>
+            </span>
+            <input type="password" id="contrasena2" name="contrasena2" minLength="10" autocomplete="new-password" placeholder="Repite la contraseña" required>
           </div>
-          <div class="mb-3">
-            <label for="contrasena2" class="form-label">Repetir contrase??a</label>
-            <input type="password" class="form-control" id="contrasena2" minlength="10" autocomplete="new-password" required>
-          </div>
-          <button id="resetButton" type="submit" class="btn btn-primary w-100">
-            Cambiar contrase??a
-          </button>
-        </form>
+        </div>
 
-        <p class="text-center mt-4 mb-0">
-          <a href="../login/">Volver a iniciar sesi??n</a>
-        </p>
+        <button id="resetButton" type="submit" class="auth-submit">
+          <span>Cambiar contraseña</span>
+        </button>
+      </form>
+
+      <div class="auth-links">
+        <a href="../login/">Volver a iniciar sesión</a>
       </div>
     </section>
   </main>

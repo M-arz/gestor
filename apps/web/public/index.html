@@ -146,6 +146,211 @@
     </div>
   </div>
 
+  <!-- Modal crear equipo -->
+  <div class="modal fade" id="modalCrearEquipo" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear equipo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="formCrearEquipo">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nuevoEquipoNombre" class="form-label">Nombre del equipo</label>
+              <input type="text" class="form-control" id="nuevoEquipoNombre" required>
+            </div>
+            <div class="mb-3">
+              <label for="nuevoEquipoMunicipio" class="form-label">Municipio</label>
+              <input type="text" class="form-control" id="nuevoEquipoMunicipio" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">Guardar equipo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal crear torneo -->
+  <div class="modal fade" id="modalCrearTorneo" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Crear torneo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="formCrearTorneo">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-control" id="torneoNombre" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Temporada</label>
+              <input type="text" class="form-control" id="torneoTemporada" value="2026" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Formato</label>
+              <select class="form-select" id="torneoFormato" required>
+                <option value="liguilla">Liguilla</option>
+                <option value="grupos">Grupos</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-control" id="torneoDescripcion" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">Guardar torneo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal crear jugador -->
+  <div class="modal fade" id="modalCrearJugador" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearJugadorTitulo">Crear jugador</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="formCrearJugador">
+          <input type="hidden" id="crearJugadorEquipoId">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombres</label>
+                <input type="text" class="form-control" id="jugadorNombres" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Apellidos</label>
+                <input type="text" class="form-control" id="jugadorApellidos" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tipo de documento</label>
+                <select class="form-select" id="jugadorTipoDocumento" required>
+                  <option value="CC">CC</option>
+                  <option value="TI">TI</option>
+                  <option value="RC">RC</option>
+                  <option value="CE">CE</option>
+                  <option value="PPT">PPT</option>
+                  <option value="PEP">PEP</option>
+                  <option value="PA">PA</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Documento</label>
+                <input type="text" class="form-control" id="jugadorDocumento" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Fecha de nacimiento</label>
+                <input type="date" class="form-control" id="jugadorFechaNacimiento" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Dorsal</label>
+                <input type="number" min="0" max="99" class="form-control" id="jugadorDorsal" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Posición</label>
+                <select class="form-select" id="jugadorPosicion" required>
+                  <option value="portero">Portero</option>
+                  <option value="defensa">Defensa</option>
+                  <option value="mediocampista">Mediocampista</option>
+                  <option value="delantero">Delantero</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <div class="form-check mt-2">
+                  <input class="form-check-input" type="checkbox" id="jugadorAutorizacionAcudiente">
+                  <label class="form-check-label" for="jugadorAutorizacionAcudiente">
+                    Tiene autorización del acudiente (si el jugador es menor de edad)
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success">Guardar jugador</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal equipos/jugadores -->
+  <div class="modal fade" id="modalJugadoresEquipo" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="jugadoresEquipoTitulo">Jugadores</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="contenidoJugadoresEquipo"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal editar jugador -->
+  <div class="modal fade" id="modalEditarJugador" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar jugador</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form id="formEditarJugador">
+          <input type="hidden" id="editarJugadorId">
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nombres</label>
+                <input type="text" class="form-control" id="editarJugadorNombres" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Apellidos</label>
+                <input type="text" class="form-control" id="editarJugadorApellidos" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Dorsal</label>
+                <input type="number" min="0" max="99" class="form-control" id="editarJugadorDorsal" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Posición</label>
+                <select class="form-select" id="editarJugadorPosicion" required>
+                  <option value="portero">Portero</option>
+                  <option value="defensa">Defensa</option>
+                  <option value="mediocampista">Mediocampista</option>
+                  <option value="delantero">Delantero</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Habilitado</label>
+                <select class="form-select" id="editarJugadorHabilitado">
+                  <option value="true">Sí</option>
+                  <option value="false">No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal detalle de torneo -->
   <div class="modal fade" id="modalDetalle" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -156,6 +361,24 @@
         </div>
         <div class="modal-body" id="detalleCuerpo"></div>
         <div class="modal-footer" id="detalleFooter"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal detalle de jugador en conflicto -->
+  <div class="modal fade" id="modalJugadorConflicto" tabindex="-1">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header bg-warning-subtle">
+          <h5 class="modal-title">Jugador en conflicto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detalleJugadorConflicto"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="btnCorregirJugadorConflicto">Corregir</button>
+          <button type="button" class="btn btn-danger" id="btnRetirarJugadorConflicto">Retirar</button>
+        </div>
       </div>
     </div>
   </div>

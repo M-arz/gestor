@@ -3,35 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Recuperar contrase??a | GESTOR</title>
+  <meta name="theme-color" content="#061629">
+  <title>Recuperar contraseña | GESTOR</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../style.css">
 </head>
-<body>
-  <main class="container min-vh-100 d-flex align-items-center justify-content-center py-5">
-    <section class="card shadow-lg border-0 w-100" style="max-width: 440px;">
-      <div class="card-body p-4 p-md-5">
-        <div class="text-center mb-4">
-          <h1 class="fw-bold">GESTOR</h1>
-          <p class="text-secondary mb-0">Recuperar contrase??a</p>
+<body class="auth-compact-page">
+  <main class="auth-compact-layout">
+    <section class="auth-compact-card">
+      <div class="auth-compact-header">
+        <div class="auth-logo-wrap">
+          <img src="../assets/logo-gestor.png" alt="Logo de GESTOR">
+        </div>
+        <p class="auth-eyebrow">RECUPERAR ACCESO</p>
+        <h1>Recuperar contraseña</h1>
+        <p class="auth-subtitle">Introduce tu correo para recibir el enlace de recuperación.</p>
+      </div>
+
+      <div id="forgotError" class="auth-alert auth-alert-error d-none" role="alert" aria-live="polite"></div>
+      <div id="forgotExito" class="auth-alert auth-alert-success d-none" role="status" aria-live="polite"></div>
+
+      <form id="forgotForm" class="auth-form">
+        <div class="auth-field-group">
+          <label for="correo">Correo electrónico</label>
+          <div class="auth-input-shell">
+            <span class="auth-input-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="5" width="18" height="14" rx="3"></rect>
+                <path d="m4 7 8 6 8-6"></path>
+              </svg>
+            </span>
+            <input type="email" id="correo" name="correo" placeholder="tu@correo.com" autocomplete="email" required>
+          </div>
         </div>
 
-        <div id="forgotError" class="alert alert-danger d-none" role="alert"></div>
-        <div id="forgotExito" class="alert alert-success d-none" role="status"></div>
+        <button id="forgotButton" type="submit" class="auth-submit">
+          <span>Enviar enlace</span>
+        </button>
+      </form>
 
-        <form id="forgotForm">
-          <div class="mb-3">
-            <label for="correo" class="form-label">Correo electr??nico</label>
-            <input type="email" class="form-control" id="correo" autocomplete="email" required>
-          </div>
-          <button id="forgotButton" type="submit" class="btn btn-primary w-100">
-            Enviar enlace
-          </button>
-        </form>
-
-        <p class="text-center mt-4 mb-0">
-          <a href="../login/">Volver a iniciar sesi??n</a>
-        </p>
+      <div class="auth-links">
+        <a href="../login/">Volver a iniciar sesión</a>
       </div>
     </section>
   </main>
