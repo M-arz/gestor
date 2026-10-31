@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { type AuthUser, Errors } from "@gestor/shared";
-import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { violacionUnica } from "../db/errores.js";
 import { administradoresTorneo, copiaUsuariosAdmin, inscripciones, torneos } from "../db/schema.js";
 import {
