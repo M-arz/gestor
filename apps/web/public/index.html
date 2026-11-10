@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,90 +8,179 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <nav class="navbar navbar-dark bg-dark sticky-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#home">GESTOR</a>
-      <div class="d-flex align-items-center">
-        <span class="text-light me-3" id="userGreeting"></span>
-        <button class="btn btn-outline-light" id="btnLogin">Login</button>
-        <button class="btn btn-outline-light" id="btnLogout" style="display:none;">Logout</button>
-      </div>
+<body class="dashboard-page">
+
+  <!-- ENCABEZADO -->
+  <nav class="navbar sticky-top dashboard-nav">
+    <div class="container-xl">
+      <a class="navbar-brand" href="#home">
+        <img src="assets/logo-gestor.png" alt="Logo de GESTOR">
+        <span>GESTOR</span>
+      </a>
+
+      <button
+        class="menu-toggle"
+        id="btnMenu"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#sidebarMenu"
+        aria-controls="sidebarMenu"
+        aria-label="Abrir menú"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
     </div>
   </nav>
 
-  <main class="container-fluid py-4">
-    <div class="row">
-      <div class="col-md-2">
-        <div class="list-group" id="menu">
-          <a class="list-group-item list-group-item-action active" href="#home">Inicio</a>
-          <a class="list-group-item list-group-item-action" href="#torneos">Torneos</a>
-          <a class="list-group-item list-group-item-action" href="#equipos">Equipos</a>
-          <a class="list-group-item list-group-item-action" href="#inscripciones">Mis Inscripciones</a>
-          <a class="list-group-item list-group-item-action" href="#posiciones">Posiciones</a>
-          <a class="list-group-item list-group-item-action" href="#estadisticas">Estadísticas</a>
-          <a class="list-group-item list-group-item-action" href="#perfil">Mi perfil</a>
-        </div>
-      </div>
-
-      <div class="col-md-10">
-        <!-- Inicio -->
-        <section id="home" class="vista">
-          <h2>Bienvenido a GESTOR</h2>
-          <p>Sistema de gestión de torneos de fútbol sobre microservicios.</p>
-          <div class="alert alert-info">
-            Puedes ver torneos, posiciones y fixture <strong>sin iniciar sesión</strong>.
-            Para crear torneos, equipos e inscribirte necesitas una cuenta.
-          </div>
-          <div id="homePublico"></div>
-        </section>
-
-        <!-- Torneos -->
-        <section id="torneos" class="vista d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Torneos</h2>
-            <button class="btn btn-success" id="btnCrearTorneo" style="display:none;">Crear Torneo</button>
-          </div>
-          <div id="listaTorneos"></div>
-        </section>
-
-        <!-- Equipos -->
-        <section id="equipos" class="vista d-none">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2>Mis Equipos</h2>
-            <button class="btn btn-success" id="btnCrearEquipo" style="display:none;">Crear Equipo</button>
-          </div>
-          <div id="listaEquipos"></div>
-        </section>
-
-        <!-- Inscripciones -->
-        <section id="inscripciones" class="vista d-none">
-          <h2 class="mb-3">Mis Inscripciones</h2>
-          <div id="listaInscripciones"></div>
-        </section>
-
-        <!-- Posiciones -->
-        <section id="posiciones" class="vista d-none">
-          <h2 class="mb-3">Tabla de Posiciones</h2>
-          <select id="selectPosiciones" class="form-select mb-3" style="max-width:420px;"></select>
-          <div id="tablaPosiciones"></div>
-        </section>
-
-        <!-- Estadísticas -->
-        <section id="estadisticas" class="vista d-none">
-          <h2 class="mb-3">Estadísticas</h2>
-          <select id="selectEstadisticas" class="form-select mb-3" style="max-width:420px;"></select>
-          <div id="contenidoEstadisticas"></div>
-        </section>
-        <section id="perfil" class="vista d-none">
-          <h2 class="mb-3">Mi perfil</h2>
-          <div id="perfilContenido"></div>
-        </section>
-      </div>
+  <!-- MENÚ LATERAL -->
+  <div
+    class="offcanvas offcanvas-end"
+    tabindex="-1"
+    id="sidebarMenu"
+    aria-labelledby="sidebarMenuLabel"
+  >
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarMenuLabel">Menú GESTOR</h5>
+      <button
+        type="button"
+        class="btn-close btn-close-white"
+        data-bs-dismiss="offcanvas"
+        aria-label="Cerrar"
+      ></button>
     </div>
+
+    <div class="offcanvas-body d-flex flex-column">
+      <div class="list-group" id="menu">
+        <a class="list-group-item list-group-item-action active" href="#home" data-bs-dismiss="offcanvas">Inicio</a>
+        <a class="list-group-item list-group-item-action" href="#torneos" data-bs-dismiss="offcanvas">Torneos</a>
+        <a class="list-group-item list-group-item-action" href="#equipos" data-bs-dismiss="offcanvas">Equipos</a>
+        <a class="list-group-item list-group-item-action" href="#inscripciones" data-bs-dismiss="offcanvas">Mis Inscripciones</a>
+        <a class="list-group-item list-group-item-action" href="#posiciones" data-bs-dismiss="offcanvas">Posiciones</a>
+        <a class="list-group-item list-group-item-action" href="#estadisticas" data-bs-dismiss="offcanvas">Estadísticas</a>
+        <a class="list-group-item list-group-item-action" href="#perfil" data-bs-dismiss="offcanvas">Mi perfil</a>
+      </div>
+
+        <div class="menu-usuario">
+          <span class="menu-usuario-nombre" id="menuUserName"></span>
+
+          <button class="btn btn-primary w-100" id="btnLogin">
+            Iniciar sesión
+          </button>
+
+          <button class="btn btn-success w-100" id="btnLogout">
+            Cerrar sesión
+          </button>
+        </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container-xl py-4 py-md-5">
+
+    <!-- INICIO -->
+    <section id="home" class="vista">
+      <div class="vista-encabezado">
+        <p class="saludo-usuario" id="userGreeting"></p>
+        <h2>Bienvenido a GESTOR</h2>
+        <p class="vista-descripcion">
+          Sistema de gestión de torneos de fútbol sobre microservicios.
+        </p>
+      </div>
+
+      <div class="alert alert-info">
+        Puedes ver torneos, posiciones y fixture
+        <strong>sin iniciar sesión</strong>.
+        Para crear torneos, equipos e inscribirte necesitas una cuenta.
+      </div>
+
+      <div id="homePublico"></div>
+    </section>
+
+    <!-- TORNEOS -->
+    <section id="torneos" class="vista d-none">
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div class="vista-encabezado">
+          <span class="eyebrow">COMPETENCIAS</span>
+          <h2>Torneos</h2>
+        </div>
+
+        <button class="btn btn-success" id="btnCrearTorneo" style="display:none;">
+          Crear Torneo
+        </button>
+      </div>
+
+      <div id="listaTorneos"></div>
+    </section>
+
+    <!-- EQUIPOS -->
+    <section id="equipos" class="vista d-none">
+      <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
+        <div class="vista-encabezado">
+          <span class="eyebrow">TUS PLANTILLAS</span>
+          <h2>Mis Equipos</h2>
+        </div>
+
+        <button class="btn btn-success" id="btnCrearEquipo" style="display:none;">
+          Crear Equipo
+        </button>
+      </div>
+
+      <div id="listaEquipos"></div>
+    </section>
+
+    <!-- INSCRIPCIONES -->
+    <section id="inscripciones" class="vista d-none">
+      <div class="vista-encabezado mb-4">
+        <span class="eyebrow">SOLICITUDES</span>
+        <h2>Mis Inscripciones</h2>
+      </div>
+
+      <div id="listaInscripciones"></div>
+    </section>
+
+    <!-- POSICIONES -->
+    <section id="posiciones" class="vista d-none">
+      <div class="vista-encabezado mb-4">
+        <span class="eyebrow">CLASIFICACIÓN</span>
+        <h2>Tabla de Posiciones</h2>
+      </div>
+
+      <select id="selectPosiciones" class="form-select mb-3" style="max-width:420px;"></select>
+      <div id="tablaPosiciones"></div>
+    </section>
+
+    <!-- ESTADÍSTICAS -->
+    <section id="estadisticas" class="vista d-none">
+      <div class="vista-encabezado mb-4">
+        <span class="eyebrow">RENDIMIENTO</span>
+        <h2>Estadísticas</h2>
+      </div>
+
+      <select id="selectEstadisticas" class="form-select mb-3" style="max-width:420px;"></select>
+      <div id="contenidoEstadisticas"></div>
+    </section>
+
+    <!-- PERFIL -->
+    <section id="perfil" class="vista d-none">
+      <div class="vista-encabezado mb-4">
+        <span class="eyebrow">CUENTA</span>
+        <h2>Mi perfil</h2>
+      </div>
+
+      <div id="perfilContenido"></div>
+    </section>
+
   </main>
 
-  <!-- Modal Login / Registro -->
+  <!-- PIE DE PÁGINA -->
+  <footer class="dashboard-footer">
+    <span class="dot"></span>
+    GESTOR · Gestión de torneos y partidos
+  </footer>
+
+  <!-- MODAL LOGIN / REGISTRO -->
   <div class="modal fade" id="modalAuth" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -103,8 +193,10 @@
               <button class="nav-link" data-tab="registro">Crear cuenta</button>
             </li>
           </ul>
+
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <div class="modal-body">
           <div id="authError" class="alert alert-danger d-none"></div>
 
@@ -113,10 +205,12 @@
               <label class="form-label">Correo</label>
               <input type="email" class="form-control" id="loginCorreo" required>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Contraseña</label>
               <input type="password" class="form-control" id="loginPassword" required>
             </div>
+
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
           </form>
 
@@ -125,20 +219,24 @@
               <label class="form-label">Nombre</label>
               <input type="text" class="form-control" id="regNombre" required>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Correo</label>
               <input type="email" class="form-control" id="regCorreo" required>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Contraseña (mínimo 10 caracteres)</label>
               <input type="password" class="form-control" id="regPassword" minlength="10" required>
             </div>
+
             <div class="form-check mb-3">
               <input class="form-check-input" type="checkbox" id="regPolitica" required>
               <label class="form-check-label" for="regPolitica">
                 Acepto la política de tratamiento de datos
               </label>
             </div>
+
             <button type="submit" class="btn btn-success w-100">Registrarme</button>
           </form>
         </div>
@@ -146,7 +244,7 @@
     </div>
   </div>
 
-  <!-- Modal crear equipo -->
+  <!-- MODAL CREAR EQUIPO -->
   <div class="modal fade" id="modalCrearEquipo" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -154,17 +252,37 @@
           <h5 class="modal-title">Crear equipo</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <form id="formCrearEquipo">
           <div class="modal-body">
             <div class="mb-3">
               <label for="nuevoEquipoNombre" class="form-label">Nombre del equipo</label>
               <input type="text" class="form-control" id="nuevoEquipoNombre" required>
             </div>
+
             <div class="mb-3">
               <label for="nuevoEquipoMunicipio" class="form-label">Municipio</label>
-              <input type="text" class="form-control" id="nuevoEquipoMunicipio" required>
+              <select class="form-select" id="nuevoEquipoMunicipio" required>
+                <option value="" selected disabled>Selecciona un municipio</option>
+                <option value="Municipio 1">Municipio 1</option>
+                <option value="Municipio 2">Municipio 2</option>
+                <option value="Municipio 3">Municipio 3</option>
+                <option value="Municipio 4">Municipio 4</option>
+                <option value="Municipio 5">Municipio 5</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="nuevoEquipoTipo" class="form-label">Tipo de equipo</label>
+              <select class="form-select" id="nuevoEquipoTipo" required>
+                <option value="" selected disabled>Selecciona el tipo</option>
+                <option value="futbol_5">Fútbol 5</option>
+                <option value="futbol_9">Fútbol 9</option>
+                <option value="futbol_11">Fútbol 11</option>
+              </select>
             </div>
           </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-success">Guardar equipo</button>
@@ -174,7 +292,7 @@
     </div>
   </div>
 
-  <!-- Modal crear torneo -->
+  <!-- MODAL CREAR TORNEO -->
   <div class="modal fade" id="modalCrearTorneo" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -182,16 +300,19 @@
           <h5 class="modal-title">Crear torneo</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <form id="formCrearTorneo">
           <div class="modal-body">
             <div class="mb-3">
               <label class="form-label">Nombre</label>
               <input type="text" class="form-control" id="torneoNombre" required>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Temporada</label>
               <input type="text" class="form-control" id="torneoTemporada" value="2026" required>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Formato</label>
               <select class="form-select" id="torneoFormato" required>
@@ -199,11 +320,13 @@
                 <option value="grupos">Grupos</option>
               </select>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Descripción</label>
               <textarea class="form-control" id="torneoDescripcion" rows="3"></textarea>
             </div>
           </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-success">Guardar torneo</button>
@@ -213,7 +336,7 @@
     </div>
   </div>
 
-  <!-- Modal crear jugador -->
+  <!-- MODAL CREAR JUGADOR -->
   <div class="modal fade" id="modalCrearJugador" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -221,18 +344,22 @@
           <h5 class="modal-title" id="crearJugadorTitulo">Crear jugador</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <form id="formCrearJugador">
           <input type="hidden" id="crearJugadorEquipoId">
+
           <div class="modal-body">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Nombres</label>
                 <input type="text" class="form-control" id="jugadorNombres" required>
               </div>
+
               <div class="col-md-6">
                 <label class="form-label">Apellidos</label>
                 <input type="text" class="form-control" id="jugadorApellidos" required>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Tipo de documento</label>
                 <select class="form-select" id="jugadorTipoDocumento" required>
@@ -245,18 +372,22 @@
                   <option value="PA">PA</option>
                 </select>
               </div>
+
               <div class="col-md-8">
                 <label class="form-label">Documento</label>
                 <input type="text" class="form-control" id="jugadorDocumento" required>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Fecha de nacimiento</label>
                 <input type="date" class="form-control" id="jugadorFechaNacimiento" required>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Dorsal</label>
                 <input type="number" min="0" max="99" class="form-control" id="jugadorDorsal" required>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Posición</label>
                 <select class="form-select" id="jugadorPosicion" required>
@@ -266,6 +397,7 @@
                   <option value="delantero">Delantero</option>
                 </select>
               </div>
+
               <div class="col-12">
                 <div class="form-check mt-2">
                   <input class="form-check-input" type="checkbox" id="jugadorAutorizacionAcudiente">
@@ -276,6 +408,7 @@
               </div>
             </div>
           </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-success">Guardar jugador</button>
@@ -285,7 +418,7 @@
     </div>
   </div>
 
-  <!-- Modal equipos/jugadores -->
+  <!-- MODAL JUGADORES DEL EQUIPO -->
   <div class="modal fade" id="modalJugadoresEquipo" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -293,6 +426,7 @@
           <h5 class="modal-title" id="jugadoresEquipoTitulo">Jugadores</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <div class="modal-body">
           <div id="contenidoJugadoresEquipo"></div>
         </div>
@@ -300,7 +434,7 @@
     </div>
   </div>
 
-  <!-- Modal editar jugador -->
+  <!-- MODAL EDITAR JUGADOR -->
   <div class="modal fade" id="modalEditarJugador" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -308,22 +442,27 @@
           <h5 class="modal-title">Editar jugador</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <form id="formEditarJugador">
           <input type="hidden" id="editarJugadorId">
+
           <div class="modal-body">
             <div class="row g-3">
               <div class="col-md-6">
                 <label class="form-label">Nombres</label>
                 <input type="text" class="form-control" id="editarJugadorNombres" required>
               </div>
+
               <div class="col-md-6">
                 <label class="form-label">Apellidos</label>
                 <input type="text" class="form-control" id="editarJugadorApellidos" required>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Dorsal</label>
                 <input type="number" min="0" max="99" class="form-control" id="editarJugadorDorsal" required>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Posición</label>
                 <select class="form-select" id="editarJugadorPosicion" required>
@@ -333,6 +472,7 @@
                   <option value="delantero">Delantero</option>
                 </select>
               </div>
+
               <div class="col-md-4">
                 <label class="form-label">Habilitado</label>
                 <select class="form-select" id="editarJugadorHabilitado">
@@ -342,6 +482,7 @@
               </div>
             </div>
           </div>
+
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-primary">Guardar cambios</button>
@@ -351,7 +492,7 @@
     </div>
   </div>
 
-  <!-- Modal detalle de torneo -->
+  <!-- MODAL DETALLE DE TORNEO -->
   <div class="modal fade" id="modalDetalle" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -359,13 +500,14 @@
           <h5 class="modal-title" id="detalleTitulo">Torneo</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <div class="modal-body" id="detalleCuerpo"></div>
         <div class="modal-footer" id="detalleFooter"></div>
       </div>
     </div>
   </div>
 
-  <!-- Modal detalle de jugador en conflicto -->
+  <!-- MODAL JUGADOR EN CONFLICTO -->
   <div class="modal fade" id="modalJugadorConflicto" tabindex="-1">
     <div class="modal-dialog modal-md">
       <div class="modal-content">
@@ -373,7 +515,9 @@
           <h5 class="modal-title">Jugador en conflicto</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+
         <div class="modal-body" id="detalleJugadorConflicto"></div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="button" class="btn btn-primary" id="btnCorregirJugadorConflicto">Corregir</button>
@@ -383,7 +527,11 @@
     </div>
   </div>
 
+  <!-- SCRIPTS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script src="app.js"></script>
+  <script src="equipos.js"></script>
+  <script src="dashboard.js"></script>
+
 </body>
 </html>

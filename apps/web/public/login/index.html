@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,41 +17,48 @@
 <body class="login-page">
   <main class="login-layout">
 
-    <!-- Panel de identidad -->
-    <section class="login-brand">
-      <div class="brand-content">
-
-        <span class="brand-label">
-          <span class="status-dot"></span>
-          PLATAFORMA DE GESTIÓN DEPORTIVA
-        </span>
-
-        <div class="brand-logo">
-          <img
-            src="../assets/logo-gestor.png"
-            alt="Logo de GESTOR"
-          >
+    <!-- Carrusel de imágenes (reemplaza el panel de identidad) -->
+    <section
+      class="login-carousel"
+      id="loginCarousel"
+      aria-roledescription="carrusel"
+      aria-label="Imágenes de GESTOR"
+    >
+      <div class="carousel-track">
+        <!-- Para agregar una imagen, duplica un bloque .carousel-slide.
+             El primero lleva la clase "active". -->
+        <div class="carousel-slide active">
+          <img src="../assets/carrusel/image1.jpeg" alt="Descripción de la imagen 1">
+          <p class="slide-municipio">Montería</p>
         </div>
 
-        <div class="brand-message">
-          <span class="brand-tag">GESTIÓN DEPORTIVA</span>
-
-          <h1>El fútbol se juega.<br>GESTOR lo organiza.</h1>
-
-          <p>
-            Administra torneos, organiza partidos y coordina
-            equipos desde un solo lugar.
-          </p>
+        <div class="carousel-slide">
+          <img src="../assets/carrusel/image2.jpeg" alt="Descripción de la imagen 2" loading="lazy">
+          <p class="slide-municipio">Cereté</p>
         </div>
 
-        <div class="brand-footer">
-          <span>GESTIÓN</span>
-          <span class="footer-separator"></span>
-          <span>ORGANIZACIÓN</span>
-          <span class="footer-separator"></span>
-          <span>COMPETENCIA</span>
+        <div class="carousel-slide">
+          <img src="../assets/carrusel/image3.jpeg" alt="Descripción de la imagen 3" loading="lazy">
+          <p class="slide-municipio">Lorica</p>
         </div>
       </div>
+
+      <!-- Logo sobre el carrusel (bórralo si no lo quieres) -->
+      <div class="carousel-logo">
+        <img src="../assets/logo-gestor.png" alt="Logo de GESTOR">
+      </div>
+
+      <!-- Texto fijo sobre las imágenes -->
+      <div class="carousel-caption">
+        <span class="caption-tag">
+          <span class="status-dot"></span>
+          NUESTRA COBERTURA
+        </span>
+        <h2>Municipios en los que operamos</h2>
+      </div>
+
+      <!-- Los puntos se generan automáticamente desde carrusel.js -->
+      <div class="carousel-dots" role="tablist" aria-label="Seleccionar imagen"></div>
     </section>
 
     <!-- Formulario de acceso -->
@@ -181,5 +187,6 @@
   </main>
 
   <script src="./login.js"></script>
+  <script src="./carrusel.js"></script>
 </body>
 </html>

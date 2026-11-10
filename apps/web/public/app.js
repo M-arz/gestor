@@ -82,20 +82,22 @@ function pintarSesion() {
   const esAdmin = usuario && usuario.rol === "admin";
   const esDelegado = usuario && usuario.rol === "delegado";
 
-  if (usuario) {
+ 
+if (usuario) {
     btnLogin.style.display = "none";
-    btnLogout.style.display = "inline-block";
+    btnLogout.style.display = "block";
     greeting.textContent = `Hola, ${usuario.nombre} (${usuario.rol})`;
     btnCrearTorneo.style.display = esAdmin ? "inline-block" : "none";
     btnCrearEquipo.style.display = esDelegado ? "inline-block" : "none";
   } else {
-    btnLogin.style.display = "inline-block";
+    btnLogin.style.display = "block";
     btnLogout.style.display = "none";
     greeting.textContent = "";
     btnCrearTorneo.style.display = "none";
     btnCrearEquipo.style.display = "none";
   }
 }
+
 
 function exigirSesion() {
   if (usuario) return true;
@@ -1617,5 +1619,29 @@ document.addEventListener("DOMContentLoaded", () => {
     pintarSesion();
     cargarPerfil();
     mostrarVista(location.hash.slice(1) || "home");
+  });
+});
+
+
+// ==========================================
+// NAVEGACIÓN DEL MENÚ LATERAL
+// ==========================================
+
+document.querySelectorAll('#menu a').forEach(enlace => {
+  enlace.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    const destino = this.getAttribute('href');
+
+    // Cambiar la sección mediante el hash
+    window.location.hash = destino;
+
+    // Cerrar el menú lateral
+    const sidebar = document.getElementById('sidebarMenu');
+    const instancia = bootstrap.Offcanvas.getInstance(sidebar);
+
+    if (instancia) {
+      instancia.hide();
+    }
   });
 });

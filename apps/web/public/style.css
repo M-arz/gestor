@@ -1,110 +1,5 @@
 
-body {
-  background: linear-gradient(180deg, #f3f7f5 0%, #edf4ef 100%);
-  color: #16231a;
-}
 
-#menu .list-group-item {
-  border-radius: 12px;
-  margin-bottom: 8px;
-  border: 1px solid rgba(13, 110, 253, 0.08);
-  transition: all 0.2s ease;
-}
-
-#menu .list-group-item.active {
-  background: linear-gradient(135deg, #0d6efd, #0b5ed7);
-  border-color: transparent;
-  box-shadow: 0 10px 25px rgba(13, 110, 253, 0.18);
-}
-
-.gestor-dashboard {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.gestor-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 1rem;
-}
-
-.gestor-summary-card {
-  border-radius: 18px;
-  padding: 1rem 1.1rem;
-  color: white;
-  min-height: 118px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-}
-
-.gestor-summary-card span {
-  opacity: 0.9;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.gestor-summary-card strong {
-  font-size: clamp(1.4rem, 2vw, 2rem);
-  margin-top: 0.5rem;
-}
-
-.gestor-summary-card.success {
-  background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.gestor-summary-card.primary {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-}
-
-.gestor-summary-card.dark {
-  background: linear-gradient(135deg, #1f2937, #111827);
-}
-
-.gestor-panel {
-  background: rgba(255, 255, 255, 0.78);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 18px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-  padding: 1rem;
-}
-
-.gestor-table thead th {
-  border-bottom: 2px solid rgba(13, 110, 253, 0.12);
-  color: #374151;
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.gestor-table tbody tr {
-  transition: background 0.2s ease;
-}
-
-.gestor-table tbody tr:hover {
-  background: rgba(13, 110, 253, 0.03);
-}
-
-.vista h2 {
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-.card {
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
-}
-
-.alert-info {
-  border-radius: 14px;
-}
-
-.btn {
-  border-radius: 10px;
-}
 
 /* =========================================================
    GESTOR: PÁGINA PÚBLICA
@@ -1957,3 +1852,819 @@ body {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* =========================================================
+   GESTOR: CARRUSEL DEL LOGIN
+   Pégalo al final de style.css (después de la sección de login).
+   Reemplaza al panel .login-brand.
+   ========================================================= */
+
+.login-page .login-carousel {
+  position: relative;
+  min-width: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--login-navy); /* se ve si una imagen no carga */
+}
+
+.login-page .carousel-track,
+.login-page .carousel-slide {
+  position: absolute;
+  inset: 0;
+}
+
+.login-page .carousel-slide {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.login-page .carousel-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.login-page .carousel-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* llena el panel sin deformar la imagen */
+  object-position: center;
+}
+
+/* Degradado suave para que el logo y los puntos se lean bien */
+.login-page .carousel-slide::after {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, rgb(6 22 41 / 45%) 0%, transparent 28%),
+    linear-gradient(0deg, rgb(6 22 41 / 85%) 0%, rgb(6 22 41 / 40%) 38%, transparent 62%);
+  content: "";
+  pointer-events: none;
+}
+
+.login-page .carousel-logo {
+  position: absolute;
+  top: clamp(24px, 4vw, 48px);
+  left: clamp(24px, 4vw, 48px);
+  z-index: 3;
+}
+
+.login-page .carousel-logo img {
+  display: block;
+  width: clamp(64px, 8vw, 96px);
+  height: clamp(64px, 8vw, 96px);
+  object-fit: contain;
+}
+
+/* Texto sobre las imágenes */
+
+.login-page .carousel-caption {
+  position: absolute;
+  right: clamp(24px, 4vw, 48px);
+  bottom: clamp(110px, 14vw, 140px);
+  left: clamp(24px, 4vw, 48px);
+  z-index: 3;
+  color: #fff;
+  text-shadow: 0 2px 14px rgb(0 0 0 / 45%);
+}
+
+.login-page .caption-tag {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #81e39b;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.login-page .carousel-caption h2 {
+  max-width: 460px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(30px, 3.4vw, 50px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+}
+
+/* Nombre del municipio de cada imagen (cambia con el slide) */
+
+.login-page .slide-municipio {
+  position: absolute;
+  bottom: clamp(58px, 7vw, 76px);
+  left: clamp(24px, 4vw, 48px);
+  z-index: 1;
+  margin: 0;
+  color: rgb(255 255 255 / 92%);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 50%);
+}
+
+/* Indicadores */
+
+.login-page .carousel-dots {
+  position: absolute;
+  bottom: clamp(22px, 4vw, 40px);
+  left: clamp(24px, 4vw, 48px);
+  z-index: 3;
+  display: flex;
+  gap: 10px;
+}
+
+.login-page .carousel-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 55%);
+  cursor: pointer;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.login-page .carousel-dot:hover {
+  background: rgb(255 255 255 / 85%);
+}
+
+.login-page .carousel-dot.active {
+  width: 28px;
+  background: #81e39b;
+}
+
+.login-page .carousel-dot:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* En móvil el panel se oculta, igual que antes */
+@media (max-width: 700px) {
+  .login-page .login-carousel {
+    display: none;
+  }
+}
+
+/* =========================================================
+   GESTOR: EQUIPOS · MINI CANCHA
+   Pégalo al final de style.css
+   ========================================================= */
+
+.equipo-card .card-title {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.equipo-tipo {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e5f3ea;
+  color: #107c35;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* Cancha */
+
+.mini-cancha {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  min-height: 300px;
+  overflow: hidden;
+  padding: 18px 8px;
+  border: 2px solid rgb(255 255 255 / 55%);
+  border-radius: 14px;
+  background: repeating-linear-gradient(
+    0deg,
+    #2a5a38 0,
+    #2a5a38 12.5%,
+    #234d30 12.5%,
+    #234d30 25%
+  );
+  box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
+}
+
+.cancha-linea-centro,
+.cancha-circulo,
+.cancha-area {
+  position: absolute;
+  z-index: 0;
+  border: 2px solid rgb(255 255 255 / 45%);
+  pointer-events: none;
+}
+
+.cancha-linea-centro {
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 0;
+  border-width: 2px 0 0;
+}
+
+.cancha-circulo {
+  top: 50%;
+  left: 50%;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cancha-area {
+  left: 50%;
+  width: 46%;
+  height: 52px;
+  transform: translateX(-50%);
+}
+
+.cancha-area-sup {
+  top: -2px;
+  border-top: 0;
+}
+
+.cancha-area-inf {
+  bottom: -2px;
+  border-bottom: 0;
+}
+
+.cancha-fila {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+/* Puestos de jugador */
+
+.slot-jugador {
+  display: flex;
+  width: 58px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slot-jugador:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.slot-circulo {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 800;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.slot-jugador:hover .slot-circulo {
+  transform: translateY(-2px) scale(1.06);
+}
+
+.slot-ocupado .slot-circulo {
+  border: 2px solid #b6f36a;
+  background: #fff;
+  color: #107c35;
+  box-shadow: 0 4px 10px rgb(0 0 0 / 25%);
+}
+
+.slot-vacio .slot-circulo {
+  border: 2px dashed rgb(255 255 255 / 70%);
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+  font-size: 20px;
+}
+
+.slot-vacio:hover .slot-circulo {
+  background: rgb(255 255 255 / 25%);
+}
+
+.slot-inhabilitado .slot-circulo {
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+.slot-nombre {
+  max-width: 100%;
+  overflow: hidden;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 60%);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Suplentes */
+
+.suplentes {
+  margin-top: 12px;
+  padding: 10px 8px 12px;
+  border: 1px solid rgb(15 23 42 / 8%);
+  border-radius: 14px;
+  background: #e9f1ec;
+}
+
+.suplentes-titulo {
+  display: block;
+  margin: 0 0 8px 4px;
+  color: #5b6b61;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.suplentes-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 4px;
+}
+
+.suplentes .slot-nombre {
+  color: #374151;
+  text-shadow: none;
+}
+
+.suplentes .slot-ocupado .slot-circulo {
+  border-color: #107c35;
+  box-shadow: 0 3px 8px rgb(15 23 42 / 12%);
+}
+
+.suplentes .slot-vacio .slot-circulo {
+  border-color: #9db3a5;
+  background: #fff;
+  color: #6b8576;
+}
+
+.suplentes .slot-vacio:hover .slot-circulo {
+  background: #f3f8f5;
+}
+
+/* =========================================================
+   GESTOR: DASHBOARD · MISMO ESTILO DEL LOGIN
+   En style.css:
+   1) Borra el bloque de arriba "DASHBOARD — PALETA DEL LOGIN"
+      (desde el inicio del archivo hasta antes de "PÁGINA PÚBLICA").
+   2) Borra el bloque final "MENÚ LATERAL GESTOR".
+   3) Pega este archivo completo al final.
+   Requiere <body class="dashboard-page">.
+   ========================================================= */
+
+.dashboard-page {
+  --d-navy: #2b5283;
+  --d-navy-dark: #203f67;
+  --d-green: #107c35;
+  --d-green-hover: #0c642a;
+  --d-cream: #f7f6f1;
+  --d-text: #17251c;
+  --d-muted: #718075;
+  --d-border: #dce3dc;
+
+  /* Bootstrap toma estos colores */
+  --bs-primary: #2b5283;
+  --bs-primary-rgb: 43, 82, 131;
+  --bs-success: #107c35;
+  --bs-success-rgb: 16, 124, 53;
+  --bs-body-font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  --bs-offcanvas-width: 320px;
+
+  min-height: 100vh;
+  margin: 0;
+  background: var(--d-cream);
+  color: var(--d-text);
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ---------- Barra superior ---------- */
+
+.dashboard-nav {
+  padding: 12px 0;
+  background: var(--d-navy);
+  box-shadow: 0 4px 15px rgb(43 82 131 / 16%);
+}
+
+.dashboard-nav .navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 3px;
+}
+
+.dashboard-nav .navbar-brand img {
+  display: block;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.menu-toggle {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 30%);
+  border-radius: 10px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.menu-toggle:hover {
+  border-color: rgb(255 255 255 / 60%);
+  background: rgb(255 255 255 / 12%);
+}
+
+.menu-toggle:focus-visible {
+  outline: 3px solid rgb(129 227 155 / 50%);
+  outline-offset: 2px;
+}
+
+.menu-toggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* ---------- Menú desplegable (derecha) ---------- */
+
+.dashboard-page .offcanvas {
+  border-left: 1px solid var(--d-border);
+  background: var(--d-cream);
+  color: var(--d-text);
+}
+
+.dashboard-page .offcanvas-header {
+  padding: 20px;
+  background: var(--d-navy);
+  color: #fff;
+}
+
+.dashboard-page .offcanvas-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.dashboard-page .offcanvas-body {
+  padding: 20px;
+}
+
+.dashboard-page #menu .list-group-item {
+  margin-bottom: 8px;
+  padding: 13px 16px;
+  border: 1px solid var(--d-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--d-navy);
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.dashboard-page #menu .list-group-item:hover {
+  border-color: var(--d-green);
+  background: #edf5ef;
+  color: var(--d-green);
+  transform: translateX(-2px);
+}
+
+.dashboard-page #menu .list-group-item.active {
+  border-color: var(--d-navy);
+  background: var(--d-navy);
+  color: #fff;
+  box-shadow: 0 8px 20px rgb(43 82 131 / 20%);
+}
+
+.menu-usuario {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--d-border);
+}
+
+.menu-usuario-nombre {
+  display: block;
+  margin-bottom: 12px;
+  overflow: hidden;
+  color: var(--d-navy);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Encabezados de sección (como el login) ---------- */
+
+.dashboard-page .eyebrow {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--d-green);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+}
+
+.dashboard-page .vista h2 {
+  margin: 0;
+  color: var(--d-navy);
+  font-size: clamp(30px, 3vw, 40px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+}
+
+.vista-descripcion {
+  margin: 12px 0 0;
+  color: var(--d-muted);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+#home .vista-encabezado {
+  margin-bottom: 24px;
+}
+
+.saludo-usuario {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  color: var(--d-green);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.saludo-usuario:empty {
+  display: none;
+}
+
+.saludo-usuario::before {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #81e39b;
+  box-shadow: 0 0 12px rgb(129 227 155 / 45%);
+  content: "";
+}
+
+/* ---------- Tarjetas, paneles y tablas ---------- */
+
+.dashboard-page .card {
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgb(43 82 131 / 5%);
+}
+
+.dashboard-page .alert-info {
+  border: 1px solid #d5e2ef;
+  border-radius: 12px;
+  background: #edf3f9;
+  color: var(--d-navy);
+}
+
+.dashboard-page .bg-success-subtle { background-color: #e5f3ea !important; }
+.dashboard-page .bg-primary-subtle,
+.dashboard-page .bg-info-subtle { background-color: #e3ebf5 !important; }
+.dashboard-page .bg-warning-subtle { background-color: #f4efd9 !important; }
+.dashboard-page .text-info { color: var(--d-navy) !important; }
+
+.gestor-dashboard {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.gestor-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+}
+
+.gestor-summary-card {
+  display: flex;
+  min-height: 118px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 1.1rem;
+  border-radius: 16px;
+  color: #fff;
+  box-shadow: 0 12px 24px rgb(15 23 42 / 12%);
+}
+
+.gestor-summary-card span {
+  opacity: 0.9;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.gestor-summary-card strong {
+  margin-top: 0.5rem;
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  font-weight: 900;
+}
+
+.gestor-summary-card.success { background: linear-gradient(135deg, #107c35, #0c642a); }
+.gestor-summary-card.primary { background: linear-gradient(135deg, #2b5283, #203f67); }
+.gestor-summary-card.dark { background: linear-gradient(135deg, #203f67, #172e4d); }
+
+.gestor-panel {
+  padding: 1rem;
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 30px rgb(43 82 131 / 6%);
+}
+
+.gestor-table thead th {
+  border-bottom: 2px solid rgb(43 82 131 / 20%);
+  color: var(--d-navy);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gestor-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.gestor-table tbody tr:hover {
+  background: #f0f5f1;
+}
+
+/* ---------- Botones ---------- */
+
+.dashboard-page .btn {
+  border-radius: 10px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.dashboard-page .btn-success {
+  --bs-btn-bg: var(--d-green);
+  --bs-btn-border-color: var(--d-green);
+  --bs-btn-hover-bg: var(--d-green-hover);
+  --bs-btn-hover-border-color: var(--d-green-hover);
+  --bs-btn-active-bg: var(--d-green-hover);
+  --bs-btn-active-border-color: var(--d-green-hover);
+  --bs-btn-disabled-bg: var(--d-green);
+  --bs-btn-disabled-border-color: var(--d-green);
+  --bs-btn-focus-shadow-rgb: 16, 124, 53;
+  font-weight: 800;
+}
+
+.dashboard-page .btn-primary {
+  --bs-btn-bg: var(--d-navy);
+  --bs-btn-border-color: var(--d-navy);
+  --bs-btn-hover-bg: var(--d-navy-dark);
+  --bs-btn-hover-border-color: var(--d-navy-dark);
+  --bs-btn-active-bg: var(--d-navy-dark);
+  --bs-btn-active-border-color: var(--d-navy-dark);
+  --bs-btn-disabled-bg: var(--d-navy);
+  --bs-btn-disabled-border-color: var(--d-navy);
+  --bs-btn-focus-shadow-rgb: 43, 82, 131;
+}
+
+.dashboard-page .btn-outline-primary {
+  --bs-btn-color: var(--d-navy);
+  --bs-btn-border-color: var(--d-navy);
+  --bs-btn-hover-bg: var(--d-navy);
+  --bs-btn-hover-border-color: var(--d-navy);
+  --bs-btn-active-bg: var(--d-navy);
+  --bs-btn-active-border-color: var(--d-navy);
+  --bs-btn-focus-shadow-rgb: 43, 82, 131;
+}
+
+.dashboard-page .btn-outline-success {
+  --bs-btn-color: var(--d-green);
+  --bs-btn-border-color: var(--d-green);
+  --bs-btn-hover-bg: var(--d-green);
+  --bs-btn-hover-border-color: var(--d-green);
+  --bs-btn-active-bg: var(--d-green);
+  --bs-btn-active-border-color: var(--d-green);
+  --bs-btn-focus-shadow-rgb: 16, 124, 53;
+}
+
+/* ---------- Formularios ---------- */
+
+.dashboard-page .form-label {
+  margin-bottom: 8px;
+  color: var(--d-navy);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboard-page .form-control,
+.dashboard-page .form-select {
+  min-height: 48px;
+  border: 1px solid var(--d-border);
+  border-radius: 10px;
+  background-color: #fff;
+  color: var(--d-text);
+  font-size: 14px;
+}
+
+.dashboard-page .form-control-sm,
+.dashboard-page .form-select-sm {
+  min-height: 38px;
+}
+
+.dashboard-page .form-control::placeholder {
+  color: #a2ada4;
+}
+
+.dashboard-page .form-control:focus,
+.dashboard-page .form-select:focus {
+  border-color: var(--d-green);
+  box-shadow: 0 0 0 4px rgb(16 124 53 / 10%);
+}
+
+.dashboard-page .form-check-input:checked {
+  border-color: var(--d-green);
+  background-color: var(--d-green);
+}
+
+/* ---------- Modales ---------- */
+
+.dashboard-page .modal-content {
+  border: 1px solid var(--d-border);
+  border-radius: 16px;
+  background: var(--d-cream);
+  box-shadow: 0 25px 60px rgb(23 37 28 / 18%);
+}
+
+.dashboard-page .modal-header,
+.dashboard-page .modal-footer {
+  border-color: var(--d-border);
+}
+
+.dashboard-page .modal-title {
+  color: var(--d-navy);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+
+.dashboard-page .nav-tabs {
+  border-bottom: 0;
+}
+
+.dashboard-page .nav-tabs .nav-link {
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--d-muted);
+  font-weight: 800;
+}
+
+.dashboard-page .nav-tabs .nav-link.active {
+  border-bottom-color: var(--d-green);
+  color: var(--d-green);
+}
+
+/* ---------- Pie ---------- */
+
+.dashboard-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px 32px;
+  color: #89948b;
+  font-size: 11px;
+  text-align: center;
+}
+
+.dashboard-footer .dot {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--d-green);
+}
+
