@@ -9,23 +9,33 @@ export const baseEnvSchema = z.object({
   REDIS_URL: z.string().url().optional(),
 });
 
+type ConfigOutput<T extends z.ZodRawShape> = z.output<typeof baseEnvSchema> & {
+  [K in keyof T]: z.output<T[K]>;
+};
+
 /** Valida el entorno al arrancar. Si falta algo, el servicio no inicia. */
 export function loadConfig<T extends z.ZodRawShape>(
   extra: T = {} as T,
   env: NodeJS.ProcessEnv = process.env,
-) {
-  const result = baseEnvSchema.extend(extra).safeParse(env);
-  if (!result.success) {
-    const lines = result.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`);
+): ConfigOutput<T> {
+  const baseResult = baseEnvSchema.safeParse(env);
+  const extraResult = z.object(extra).safeParse(env);
+  if (!baseResult.success || !extraResult.success) {
+    const issues = [
+      ...(baseResult.success ? [] : baseResult.error.issues),
+      ...(extraResult.success ? [] : extraResult.error.issues),
+    ];
+    const lines = issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`);
     throw new Error(`Configuración inválida:\n${lines.join("\n")}`);
   }
+  const config = Object.assign(baseResult.data, extraResult.data) as ConfigOutput<T>;
   // Un secreto de desarrollo nunca debe llegar a producción.
-  if (result.data.NODE_ENV === "production") {
+  if (config.NODE_ENV === "production") {
     for (const [k, v] of Object.entries(env)) {
       if (typeof v === "string" && v.includes("dev-only")) {
         throw new Error(`Configuración inválida: ${k} usa un valor de desarrollo en producción`);
       }
     }
   }
-  return result.data;
+  return config;
 }

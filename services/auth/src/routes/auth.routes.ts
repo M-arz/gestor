@@ -9,7 +9,7 @@ const correo = z.string().trim().toLowerCase().email().max(254);
 const contrasena = z.string().min(10, "Mínimo 10 caracteres").max(128);
 const nombre = z.string().trim().min(1).max(100);
 const aceptaPolitica = z.literal(true, {
-  errorMap: () => ({ message: "Debes aceptar la política" }),
+  error: "Debes aceptar la política",
 });
 
 const registro = z.object({ correo, nombre, contrasena, aceptaPolitica });
