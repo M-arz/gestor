@@ -7,12 +7,12 @@
  * "Ver jugadores" (abrirJugadoresEquipo) sigue igual.
  */
 
-// Formaciones: cuántos titulares por línea y cuántos puestos de suplentes.
+// Formaciones: cuántos titulares por línea (los suplentes crecen solos).
 // Cambia los números aquí si quieres otra formación.
 const FORMATOS_EQUIPO = {
-  futbol_5:  { etiqueta: "Fútbol 5",  suplentes: 3, lineas: { delantero: 2, mediocampista: 0, defensa: 2, portero: 1 } },
-  futbol_9:  { etiqueta: "Fútbol 9",  suplentes: 5, lineas: { delantero: 2, mediocampista: 3, defensa: 3, portero: 1 } },
-  futbol_11: { etiqueta: "Fútbol 11", suplentes: 7, lineas: { delantero: 2, mediocampista: 4, defensa: 4, portero: 1 } },
+  futbol_5:  { etiqueta: "Fútbol 5",  lineas: { delantero: 2, mediocampista: 0, defensa: 2, portero: 1 } },
+  futbol_9:  { etiqueta: "Fútbol 9",  lineas: { delantero: 2, mediocampista: 3, defensa: 3, portero: 1 } },
+  futbol_11: { etiqueta: "Fútbol 11", lineas: { delantero: 2, mediocampista: 4, defensa: 4, portero: 1 } },
 };
 const ORDEN_LINEAS = ["delantero", "mediocampista", "defensa", "portero"]; // de arriba a abajo
 const ABREVIATURA_POSICION = { portero: "POR", defensa: "DEF", mediocampista: "MED", delantero: "DEL" };
@@ -73,8 +73,8 @@ function distribuirJugadores(tipo, jugadores) {
   });
 
   resto.push(...ordenados.filter((j) => !ORDEN_LINEAS.includes(j.posicion)));
-  const total = Math.max(formato.suplentes, resto.length);
-  const suplentes = Array.from({ length: total }, (_, i) => resto[i] || null);
+  // Banca: los suplentes que ya hay + un único puesto vacío para agregar el siguiente
+  const suplentes = [...resto, null];
 
   const titulares = filas.reduce((acc, f) => acc + f.slots.filter(Boolean).length, 0);
   const cupoTitulares = filas.reduce((acc, f) => acc + f.slots.length, 0);
@@ -112,13 +112,7 @@ function tarjetaEquipoCancha(equipo) {
     <div class="col-md-6 col-xl-4">
       <div class="card equipo-card h-100">
         <div class="card-body d-flex flex-column">
-          <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
-            <div>
-              <h5 class="card-title mb-0">${esc(equipo.nombre)}</h5>
-              <small class="text-muted">${esc(equipo.municipio || "")}</small>
-            </div>
-            <span class="badge equipo-tipo">${FORMATOS_EQUIPO[tipo].etiqueta}</span>
-          </div>
+          ${cabeceraEquipo(equipo, tipo)}
 
           <div class="mini-cancha">
             <span class="cancha-linea-centro"></span>
@@ -146,15 +140,34 @@ function tarjetaEquipoCancha(equipo) {
     </div>`;
 }
 
+function cabeceraEquipo(equipo, tipo) {
+  const inicial = (equipo.nombre || "?").trim().charAt(0).toUpperCase();
+  return `
+    <div class="equipo-cabecera">
+      <span class="equipo-avatar" aria-hidden="true">${esc(inicial)}</span>
+      <div class="equipo-titulo">
+        <h5 class="card-title mb-0">${esc(equipo.nombre)}</h5>
+        ${
+          equipo.municipio
+            ? `<small class="equipo-municipio">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                ${esc(equipo.municipio)}
+              </small>`
+            : ""
+        }
+      </div>
+      <span class="badge equipo-tipo">${FORMATOS_EQUIPO[tipo].etiqueta}</span>
+    </div>`;
+}
+
 function tarjetaEquipoSimple(equipo) {
   return `
-    <div class="col-md-4">
-      <div class="card h-100">
+    <div class="col-md-6 col-xl-4">
+      <div class="card equipo-card equipo-card-simple h-100">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">${esc(equipo.nombre)}</h5>
-          <p class="card-text text-muted">${esc(equipo.municipio || "")}</p>
-          <div class="mt-auto">
-            <button class="btn btn-sm btn-outline-primary" data-ver-jugadores="${esc(equipo.id)}">Ver jugadores</button>
+          ${cabeceraEquipo(equipo, tipoDeEquipo(equipo))}
+          <div class="mt-auto pt-3">
+            <button class="btn btn-sm btn-outline-primary w-100" data-ver-jugadores="${esc(equipo.id)}">Ver jugadores</button>
           </div>
         </div>
       </div>

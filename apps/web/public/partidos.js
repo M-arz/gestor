@@ -219,9 +219,9 @@ function filaPartido(p, esAdmin, propio) {
   const botones = [`<button class="btn btn-sm btn-outline-primary" data-accion="detalle" data-id="${id}">Detalle</button>`];
   if (esAdmin && p.estado !== "cancelado") {
     botones.push(
-      `<button class="btn btn-sm btn-success" data-accion="resultado" data-id="${id}">${p.estado === "finalizado" ? "Editar resultado" : "Resultado"}</button>`,
+      `<button class="btn btn-sm btn-outline-primary" data-accion="resultado" data-id="${id}">${p.estado === "finalizado" ? "Editar resultado" : "Resultado"}</button>`,
       `<button class="btn btn-sm btn-outline-primary" data-accion="editar" data-id="${id}">Editar</button>`,
-      `<button class="btn btn-sm btn-outline-danger" data-accion="cancelar" data-id="${id}">Cancelar</button>`,
+      `<button class="btn btn-sm btn-outline-primary" data-accion="cancelar" data-id="${id}">Cancelar</button>`,
     );
   }
 

@@ -2760,3 +2760,307 @@
     justify-content: flex-start;
   }
 }
+
+/* =========================================================
+   GESTOR: MEJORAS DE DISEÑO DEL DASHBOARD
+   Pégalo al FINAL de style.css (después del bloque de partidos).
+   ========================================================= */
+
+/* ---------- Fondo, selección y transición entre vistas ---------- */
+
+.dashboard-page {
+  background:
+    radial-gradient(900px 420px at 100% -10%, rgb(16 124 53 / 7%), transparent 60%),
+    radial-gradient(800px 400px at -10% 0%, rgb(43 82 131 / 8%), transparent 60%),
+    var(--d-cream);
+  background-attachment: fixed;
+}
+
+.dashboard-page ::selection {
+  background: rgb(16 124 53 / 20%);
+}
+
+@keyframes vista-entrada {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.dashboard-page .vista:not(.d-none) {
+  animation: vista-entrada 0.35s ease both;
+}
+
+/* ---------- Barra superior y menú ---------- */
+
+.dashboard-nav {
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+.dashboard-nav .navbar-brand {
+  transition: opacity 0.2s;
+}
+
+.dashboard-nav .navbar-brand:hover {
+  opacity: 0.85;
+}
+
+.dashboard-page .offcanvas-end {
+  overflow: hidden;
+  border-radius: 20px 0 0 20px;
+  box-shadow: -20px 0 50px rgb(23 37 28 / 15%);
+}
+
+.menu-usuario-nombre::before {
+  display: block;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--d-navy), var(--d-green));
+  content: "";
+}
+
+/* ---------- Tarjetas en general ---------- */
+
+.dashboard-page .card {
+  border-radius: 18px;
+}
+
+.dashboard-page .card.h-100 {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.dashboard-page .card.h-100:hover {
+  transform: translateY(-4px);
+  border-color: #c9d8cd;
+  box-shadow: 0 18px 36px rgb(43 82 131 / 12%);
+}
+
+.dashboard-page .card-body {
+  padding: 1.25rem;
+}
+
+/* ---------- Tarjetas de equipo ---------- */
+
+.dashboard-page .equipo-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-page .equipo-card::before {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--d-navy), var(--d-green));
+  content: "";
+}
+
+.equipo-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.equipo-avatar {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--d-navy), var(--d-navy-dark));
+  box-shadow: 0 8px 18px rgb(43 82 131 / 25%);
+  color: #fff;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.equipo-titulo {
+  min-width: 0;
+  flex: 1;
+}
+
+.dashboard-page .equipo-card .card-title {
+  overflow: hidden;
+  color: var(--d-navy);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.equipo-municipio {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--d-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.equipo-municipio svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dashboard-page .equipo-tipo {
+  flex: 0 0 auto;
+  align-self: flex-start;
+}
+
+.dashboard-page .equipo-card-simple {
+  min-height: 190px;
+}
+
+/* ---------- Resúmenes, paneles y tablas ---------- */
+
+.gestor-summary-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.gestor-summary-card::after {
+  position: absolute;
+  top: -34px;
+  right: -34px;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 10%);
+  content: "";
+  pointer-events: none;
+}
+
+.gestor-summary-card span,
+.gestor-summary-card strong {
+  position: relative;
+  z-index: 1;
+}
+
+.gestor-summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 32px rgb(15 23 42 / 18%);
+}
+
+.dashboard-page .table {
+  --bs-table-hover-bg: #f0f5f1;
+  --bs-table-striped-bg: #f7faf8;
+}
+
+.dashboard-page .table thead th {
+  border-bottom: 2px solid rgb(43 82 131 / 20%);
+  color: var(--d-navy);
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-page .table > :not(caption) > * > * {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.dashboard-page .list-group:not(#menu) {
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.dashboard-page .list-group:not(#menu) .list-group-item {
+  border-color: var(--d-border);
+  padding: 0.9rem 1rem;
+}
+
+.dashboard-page .badge {
+  padding: 0.45em 0.8em;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Botones ---------- */
+
+.dashboard-page .btn-success:hover,
+.dashboard-page .btn-primary:hover {
+  box-shadow: 0 8px 18px rgb(43 82 131 / 18%);
+  transform: translateY(-1px);
+}
+
+.dashboard-page .btn:focus-visible {
+  outline: 3px solid rgb(16 124 53 / 30%);
+  outline-offset: 2px;
+}
+
+.dashboard-page .btn-outline-secondary {
+  --bs-btn-color: var(--d-muted);
+  --bs-btn-border-color: var(--d-border);
+  --bs-btn-hover-bg: #edf1ee;
+  --bs-btn-hover-border-color: #c9d3cc;
+  --bs-btn-hover-color: var(--d-text);
+}
+
+/* ---------- Partidos ---------- */
+
+.partido-fila:not(.partido-propio):hover {
+  border-radius: 8px;
+  background: #f8fbf9;
+}
+
+.partido-marcador {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Ventanas y avisos ---------- */
+
+.dashboard-page .modal-backdrop.show {
+  opacity: 0.5;
+  backdrop-filter: blur(3px);
+}
+
+.dashboard-page .modal-header {
+  padding: 1.1rem 1.4rem;
+}
+
+.dashboard-page .modal-body {
+  padding: 1.4rem;
+}
+
+.dashboard-page .modal-footer {
+  padding: 1rem 1.4rem;
+}
+
+.dashboard-page .toast {
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgb(15 23 42 / 22%);
+  font-weight: 600;
+}
+
+/* ---------- Móvil y accesibilidad ---------- */
+
+@media (max-width: 576px) {
+  .dashboard-page .vista h2 {
+    font-size: 28px;
+  }
+
+  .dashboard-page .card-body,
+  .gestor-panel {
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page *,
+  .dashboard-page *::before,
+  .dashboard-page *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
