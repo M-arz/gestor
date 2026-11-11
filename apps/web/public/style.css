@@ -2668,3 +2668,95 @@
   background: var(--d-green);
 }
 
+/* =========================================================
+   GESTOR: PARTIDOS
+   Pégalo al final de style.css
+   ========================================================= */
+
+.jornada-titulo {
+  margin: 0 0 4px;
+  color: var(--d-navy);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.partido-fila {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 14px 8px;
+}
+
+.partido-fila + .partido-fila {
+  border-top: 1px solid var(--d-border);
+}
+
+.partido-propio {
+  border-left: 3px solid var(--d-green);
+  border-radius: 8px;
+  background: #f0f7f2;
+}
+
+.partido-equipos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--d-navy);
+  font-weight: 800;
+}
+
+.partido-equipo {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.partido-local {
+  text-align: right;
+}
+
+.partido-marcador {
+  min-width: 64px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: #e9f1ec;
+  color: var(--d-green);
+  font-weight: 900;
+  text-align: center;
+}
+
+.partido-meta {
+  grid-column: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--d-muted);
+  font-size: 13px;
+}
+
+.partido-acciones {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+@media (max-width: 640px) {
+  .partido-fila {
+    grid-template-columns: 1fr;
+  }
+
+  .partido-acciones {
+    grid-column: 1;
+    grid-row: auto;
+    justify-content: flex-start;
+  }
+}
